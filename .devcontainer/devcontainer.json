@@ -1,0 +1,24 @@
+{
+  // GitHub Codespaces: en färdig miljö i webbläsaren, utan att installera något.
+  // Öppnas via "Use this template → Open in a codespace" på GitHub.
+  "name": "SJ-prototyp",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:22",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/anthropics/devcontainer-features/claude-code:1.0": {}
+  },
+  // Samma som `npm run setup`, utom miljökollen: git och inloggning sköter Codespaces.
+  "postCreateCommand": "npm install --no-fund --no-audit && node scripts/sj-update.mjs && node scripts/setup-skills.mjs",
+  "forwardPorts": [5173],
+  "portsAttributes": {
+    "5173": { "label": "Prototyp", "onAutoForward": "openPreview" }
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["GitHub.copilot-chat", "anthropic.claude-code"]
+    },
+    "codespaces": {
+      "openFiles": ["README.md"]
+    }
+  }
+}

@@ -23,6 +23,14 @@ Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par s
 3. **Finns designskillen?** Saknas `.claude/skills/impeccable`: kör `npm run skills`.
 4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. Saknas de: be designern starta om agenten. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp.
 
+## Om du kör i GitHub Codespaces
+
+Är miljövariabeln `CODESPACES` satt till `true` finns git, Node och GitHub CLI redan, och designern är inloggad. `.devcontainer/devcontainer.json` har också redan kört installation, SJ-uppdatering och skills. Hoppa över installationsstegen nedan.
+
+- Prototypen nås via en vidarebefordrad port (5173). Säg åt designern att öppna den från fliken *Ports* om förhandsvisningen inte öppnas av sig själv.
+- En codespace som skapats från mallen är **inte kopplad till något repo** förrän den publiceras. Föreslå tidigt att spara via *Source Control → Commit → Publish Branch → Publish to GitHub private repository*. Annars finns arbetet bara i codespacen.
+- Påminn om att stänga codespacen när designern är klar för dagen. Gratistimmarna är begränsade.
+
 ## Första gången på en ny dator
 
 Följ [docs/kom-igang.md](docs/kom-igang.md) och ta ett steg i taget tillsammans med designern. Kör `npm run doctor` efter varje steg så att ni ser att det gick igenom. Kortversionen:

@@ -4,6 +4,7 @@
 >
 > Designern har gett dig länken till en **mall**. Läs inte bara om den, och skriv inga specifikationer eller planer ännu. Gör så här, i den här ordningen:
 >
+> 0. **Kör du i GitHub Codespaces** (miljövariabeln `CODESPACES` är `true`)? Då finns allt redan och `npm run setup` har körts. Hoppa direkt till steg 4.
 > 1. **Kolla att git och Node finns** (`git --version`, `node --version`). Saknas något: hjälp designern installera det enligt [docs/kom-igang.md](https://github.com/emarkensten/sj-design-code-template/blob/main/docs/kom-igang.md), steg 1–2.
 > 2. **Skapa designerns egen kopia och hämta den:**
 >    - Är designern inloggad på github.com (`gh auth status --hostname github.com`): `GH_HOST=github.com gh repo create <namn> --template emarkensten/sj-design-code-template --private --clone`, och gå in i mappen.
@@ -22,6 +23,16 @@ En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s desi
 - **Dela med en länk** via Vercel
 
 ## Snabbstart
+
+### Enklast: i webbläsaren, utan att installera något
+
+1. Klicka **Use this template** uppe till höger på den här sidan och välj **Open in a codespace**.
+2. Vänta några minuter medan miljön byggs och allt installeras.
+3. Öppna Copilot-chatten (eller Claude Code) och skriv vad du vill bygga.
+
+Codespaces är gratis upp till en viss mängd användning per månad på ett privat GitHub-konto.
+
+### På din egen dator
 
 ```bash
 npm run setup
