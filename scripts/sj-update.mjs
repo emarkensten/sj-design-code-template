@@ -15,8 +15,9 @@ const npm = "npm";
 const shell = process.platform === "win32";
 
 const pkg = JSON.parse(readFileSync("package.json", "utf8"));
-const sjPackages = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }).filter((name) =>
-  name.startsWith("@sj-ab/"),
+// Samma namnkontroll som sj-add: på Windows körs npm via ett skal.
+const sjPackages = Object.keys({ ...pkg.dependencies, ...pkg.devDependencies }).filter(
+  (name) => name.startsWith("@sj-ab/") && /^[@a-zA-Z0-9][a-zA-Z0-9._/-]*$/.test(name),
 );
 
 if (sjPackages.length === 0) {

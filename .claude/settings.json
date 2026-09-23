@@ -1,10 +1,8 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
-  "enableAllProjectMcpServers": true,
   "permissions": {
     "allow": [
       "Bash(npm run *)",
-      "Bash(npm install *)",
       "Bash(npx tsc *)",
       "Bash(git status*)",
       "Bash(git diff*)",
@@ -26,5 +24,9 @@
         ]
       }
     ]
-  }
+  },
+  "enabledMcpjsonServers": [
+    "sj-design-system",
+    "sj-storybook"
+  ]
 }

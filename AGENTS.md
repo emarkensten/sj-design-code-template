@@ -97,7 +97,9 @@ npm run sj:list                                  # vad som redan är installerat
 
 Namnet är kebab-case och finns i Storybook eller via `find_bit_component`. Paketnamnet blir `@sj-ab/component-library.ui.<namn>`. Ikoner finns i **ett** paket: `import { Search, ChevronRight } from "@sj-ab/component-library.ui.icons"`, med `Small`-suffix för små varianter.
 
-Håll paketen på senaste versionen med caret-intervall (`^`). Lås aldrig en version.
+Håll paketen på senaste versionen med caret-intervall (`^`). Lås aldrig en version. Undantaget är design-system-MCP:n, som är låst till en granskad version i `.mcp.json` och `.vscode/mcp.json` eftersom npx kör den automatiskt. Finns en nyare version (`get_component_changelog` eller `npm view @sj-ab/component-library.internal.design-system-mcp version`): berätta det för designern i stället för att bumpa den själv.
+
+Installera paket med `npm run sj:add` och kör aldrig `npm install <paket>` på eget initiativ. Paket utanför `@sj-ab` behöver designerns uttryckliga ok.
 
 ### Hårda regler för kod
 

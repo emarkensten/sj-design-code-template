@@ -38,6 +38,15 @@ function toPackageName(input) {
     : `${PREFIX}ui.${name}`;
 }
 
+// Bara paketnamnstecken. Skyddar mot att något annat än ett namn når npm
+// (på Windows körs npm via ett skal).
+const SAFE_NAME = /^[@a-zA-Z0-9][a-zA-Z0-9._/-]*$/;
+const unsafe = args.filter((a) => !SAFE_NAME.test(a));
+if (unsafe.length > 0) {
+  console.error(`Ogiltigt komponentnamn: ${unsafe.join(", ")}`);
+  process.exit(1);
+}
+
 const found = [];
 const missing = [];
 for (const input of args) {

@@ -3,7 +3,7 @@
     "sj-design-system": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@sj-ab/component-library.internal.design-system-mcp@latest", "mcp"]
+      "args": ["-y", "@sj-ab/component-library.internal.design-system-mcp@0.1.1", "mcp"]
     },
     "sj-storybook": {
       "type": "http",
