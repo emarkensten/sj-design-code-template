@@ -40,5 +40,8 @@ for (const skill of SKILLS) {
 if (failed > 0) {
   console.warn(`\n${failed} skill(s) kunde inte installeras. Kör \`npm run skills\` igen när du är online.`);
 } else {
-  console.log("\nSkills klara. Starta om Claude Code eller Copilot-chatten så att de laddas.");
+  console.log(
+    "\nSkills klara. VIKTIGT: starta om kodagenten i den här mappen (VS Code: File → Open Folder, " +
+      "Claude: ny session) så att designskillen och SJ:s MCP-servrar laddas.",
+  );
 }

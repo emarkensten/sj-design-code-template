@@ -21,7 +21,19 @@ Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par s
 1. **Finns `node_modules/`?** Om inte: kör `npm run doctor`. Rapporterar den `SAKNAS`, gå till "Första gången på en ny dator" nedan. Annars kör du `npm run setup`.
 2. **Är SJ-komponenterna på senaste versionen?** Kör `npm run sj:check`. Kör `npm run sj:update` om något är inaktuellt och berätta kort vad som uppdaterades. Vid en ny major-version (skriptet flaggar det): kör `npm run typecheck` efteråt och fixa det som gått sönder. (I Claude Code körs kollen automatiskt vid start och resultatet syns som `[SJ-mall]`-rader. Du behöver bara agera på dem.)
 3. **Finns designskillen?** Saknas `.claude/skills/impeccable`: kör `npm run skills`.
-4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). **Har du precis klonat mallen i den här sessionen** är de inte laddade än. Be designern starta om: i VS Code *Cmd+Shift+P → Developer: Reload Window*, i Claude en ny session i mappen. Vill designern inte vänta: fortsätt med `.d.ts`-filerna som källa och säg det. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. Saknas de: be designern starta om agenten. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp.
+4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). Saknas de efter att du klonat mallen i den här sessionen: se "Obligatoriskt stopp" nedan. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp.
+
+**Obligatoriskt stopp efter kloning och setup i samma session.** MCP-servrarna (`sj-storybook`, `sj-design-system`) och skillen impeccable laddas bara när agenten startar i mallens mapp. Har du klonat mallen i den här sessionen, eller saknas de verktygen i din verktygslista: **bygg ingenting än.** Stanna och skriv till designern, ungefär så här:
+
+> Nu är mallen på plats. För att jag ska kunna fråga SJ:s designsystem om komponenter och riktlinjer behöver jag startas om i den nya mappen. Det tar en halv minut:
+>
+> - **VS Code:** *File → Open Folder* och välj mappen `<sökväg>`. Godkänn MCP-servrarna om VS Code frågar. Öppna sedan Copilot-chatten igen.
+> - **Claude:** starta en ny session i mappen `<sökväg>`.
+>
+> Klistra sedan in det här, så fortsätter jag där vi var:
+> *"<designerns ursprungliga beställning, i en mening>. Mallen är installerad och jag har startat om."*
+
+Fyll i sökvägen och beställningen själv, så att designern bara behöver kopiera. Fortsätt utan omstart bara om designern uttryckligen ber om det, och säg då att du bygger utan SJ:s dokumentation och bara har typfilerna att gå på.
 
 ## Om du kör i GitHub Codespaces
 
@@ -61,7 +73,7 @@ Fråga alltid, första gången en ny vy eller ett nytt flöde ska byggas: **"Fin
 **Så används impeccable här:** skillen läser `DESIGN.md` och `PRODUCT.md` i roten. `DESIGN.md` säger att SJ:s visuella värld är given, så allt är *refinement*, aldrig *redesign*.
 
 - **Arbetsflödena är instruktioner, inte terminalkommandon.** `shape`, `critique`, `audit` och de andra finns som filer: läs `.agents/skills/impeccable/reference/<namn>.md` och följ den. Launchern `.agents/skills/impeccable/scripts/impeccable` har bara verktygskommandon. Den användbara här är `detect <fil eller URL>`, som skannar efter vanliga designfel. Kör den gärna efter `critique`.
-- **Har skillen precis installerats i den här sessionen** laddas den inte förrän agenten startats om. Vänta inte på det: läs `.agents/skills/impeccable/SKILL.md` och relevant `reference/`-fil direkt och fortsätt. Kör aldrig `impeccable document` eller `bolder` eller `colorize` (de skriver om eller byter den visuella världen) och byt aldrig typsnitt, färger, skuggor eller radier på skillens inrådan. **SJ:s designsystem går alltid före skillens smak.**
+- **Har skillen precis installerats i den här sessionen** laddas den inte förrän agenten startats om. Det hanteras av det obligatoriska stoppet ovan. Har designern valt att fortsätta utan omstart: läs `.agents/skills/impeccable/SKILL.md` och relevant `reference/`-fil direkt. Kör aldrig `impeccable document` eller `bolder` eller `colorize` (de skriver om eller byter den visuella världen) och byt aldrig typsnitt, färger, skuggor eller radier på skillens inrådan. **SJ:s designsystem går alltid före skillens smak.**
 
 ## SJ:s designsystem
 
