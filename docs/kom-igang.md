@@ -151,5 +151,7 @@ Du kan vara inloggad på båda samtidigt. Lägg inte innehåll från SJ:s intern
 
 - Kör `npm run doctor` och visa resultatet för agenten.
 - *"command not found"* direkt efter en installation: stäng Terminal och öppna igen.
+- `gh` säger att du inte är inloggad fast du är det: en gammal `GH_TOKEN` i miljön kan ställa till det. Be agenten kolla, eller kör `env -u GH_TOKEN gh auth status`.
+- Prototypen visar fel innehåll: en annan prototyp kan redan köra på port 5173. Titta i terminalen vilken adress `npm run dev` skriver ut, till exempel `localhost:5174`.
 - Paket från `@sj-ab` hittas inte: kolla att filen `.npmrc` finns i projektmappen.
 - Agenten verkar inte känna till SJ:s komponenter: starta om den och be den köra checklistan i `AGENTS.md`.

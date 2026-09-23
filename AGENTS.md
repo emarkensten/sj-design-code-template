@@ -21,7 +21,7 @@ Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par s
 1. **Finns `node_modules/`?** Om inte: kör `npm run doctor`. Rapporterar den `SAKNAS`, gå till "Första gången på en ny dator" nedan. Annars kör du `npm run setup`.
 2. **Är SJ-komponenterna på senaste versionen?** Kör `npm run sj:check`. Kör `npm run sj:update` om något är inaktuellt och berätta kort vad som uppdaterades. Vid en ny major-version (skriptet flaggar det): kör `npm run typecheck` efteråt och fixa det som gått sönder. (I Claude Code körs kollen automatiskt vid start och resultatet syns som `[SJ-mall]`-rader. Du behöver bara agera på dem.)
 3. **Finns designskillen?** Saknas `.claude/skills/impeccable`: kör `npm run skills`.
-4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. Saknas de: be designern starta om agenten. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp.
+4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). **Har du precis klonat mallen i den här sessionen** är de inte laddade än. Be designern starta om: i VS Code *Cmd+Shift+P → Developer: Reload Window*, i Claude en ny session i mappen. Vill designern inte vänta: fortsätt med `.d.ts`-filerna som källa och säg det. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. Saknas de: be designern starta om agenten. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp.
 
 ## Om du kör i GitHub Codespaces
 
@@ -42,6 +42,8 @@ Följ [docs/kom-igang.md](docs/kom-igang.md) och ta ett steg i taget tillsammans
 
 **Inget i mallen kräver SJ:s GitHub Enterprise, VPN eller SJ-konto.** Komponenter, MCP-servrar och typsnitt hämtas publikt. De flesta designers har inget GHE-konto, så nämn det inte om designern inte tar upp det själv. Har designern ett och vill läsa teamets repon: se "SJ:s GitHub Enterprise" längre ned.
 
+**Om `gh` säger att inloggningen misslyckats** fast designern loggat in: en ogiltig `GH_TOKEN` eller `GITHUB_TOKEN` i miljön går före den sparade inloggningen. Kör `env -u GH_TOKEN -u GITHUB_TOKEN gh auth status` för att se den riktiga inloggningen, och använd samma prefix på `gh`-kommandon. För att klona mallen behövs ingen inloggning alls.
+
 **Använd alltid full github.com-adress.** Copilots inbyggda GitHub-koppling och `gh` kan vara inställda på SJ:s GitHub Enterprise (till exempel via miljövariabeln `GH_HOST`). Då leder kortformer som `ägare/repo` fel och ger 404 eller inloggningsfel. Skriv `https://github.com/ägare/repo`, eller sätt `GH_HOST=github.com` framför `gh`-kommandon.
 
 ## Innan du designar något: fråga efter Figma
@@ -51,12 +53,15 @@ Fråga alltid, första gången en ny vy eller ett nytt flöde ska byggas: **"Fin
 - **Ja, det finns Figma:** be om länken (högerklick på framen i Figma, välj *Copy link to selection*). Använd Figma-MCP:n (`get_design_context`, `get_screenshot`, `get_variable_defs`) för att läsa designen. Bygg den med SJ-komponenter, översätt Figma-lager till rätt komponent och inte till handgjorda divar. `find_figma_token_mapping` i `sj-design-system`-MCP:n översätter Figma-variabler till SJ-tokens. Saknar agenten Figma-MCP: föreslå att installera den (se nedan).
 - **Nej, ingen Figma:** berätta att du tänker använda designskillen **impeccable** och varför. Skriv till exempel: "Det finns ingen skiss, så jag planerar vyn med impeccable först och granskar den när den är byggd. Allt inom SJ:s designsystem." Gör sedan så här:
   1. Kolla att `PRODUCT.md` har *Users* och *Product Purpose* ifyllda för prototypen. Ställ annars högst tre korta frågor till designern (vem, i vilken situation, vad ska hen få gjort) och fyll i dem.
-  2. **Före bygget:** `impeccable shape <vy>`, för att planera flöde och hierarki.
+  2. **Före bygget:** arbetsflödet `shape`, för att planera flöde och hierarki.
   3. Bygg med SJ-komponenter enligt reglerna nedan.
-  4. **Efter bygget:** `impeccable critique <fil>` (UX-granskning) och `impeccable audit <fil>` (tillgänglighet och responsivitet). Åtgärda det som hittas i en omgång.
+  4. **Efter bygget:** arbetsflödena `critique` (UX-granskning) och `audit` (tillgänglighet och responsivitet). Åtgärda det som hittas i en omgång.
   5. Vid behov: `layout` (avstånd och rytm), `distill` (skala bort), `harden` (fel-, tom- och laddlägen) eller `onboard` (första gången, tomma lägen).
 
-**Så används impeccable här:** skillen läser `DESIGN.md` och `PRODUCT.md` i roten. `DESIGN.md` säger att SJ:s visuella värld är given, så allt är *refinement*, aldrig *redesign*. Skillen startar med `.agents/skills/impeccable/scripts/impeccable context`, ett skript som följer med skillen. Vägrar eller misslyckas det: läs `DESIGN.md` och `PRODUCT.md` direkt och fortsätt. Kör aldrig `impeccable document` eller `bolder` eller `colorize` (de skriver om eller byter den visuella världen) och byt aldrig typsnitt, färger, skuggor eller radier på skillens inrådan. **SJ:s designsystem går alltid före skillens smak.**
+**Så används impeccable här:** skillen läser `DESIGN.md` och `PRODUCT.md` i roten. `DESIGN.md` säger att SJ:s visuella värld är given, så allt är *refinement*, aldrig *redesign*.
+
+- **Arbetsflödena är instruktioner, inte terminalkommandon.** `shape`, `critique`, `audit` och de andra finns som filer: läs `.agents/skills/impeccable/reference/<namn>.md` och följ den. Launchern `.agents/skills/impeccable/scripts/impeccable` har bara verktygskommandon. Den användbara här är `detect <fil eller URL>`, som skannar efter vanliga designfel. Kör den gärna efter `critique`.
+- **Har skillen precis installerats i den här sessionen** laddas den inte förrän agenten startats om. Vänta inte på det: läs `.agents/skills/impeccable/SKILL.md` och relevant `reference/`-fil direkt och fortsätt. Kör aldrig `impeccable document` eller `bolder` eller `colorize` (de skriver om eller byter den visuella världen) och byt aldrig typsnitt, färger, skuggor eller radier på skillens inrådan. **SJ:s designsystem går alltid före skillens smak.**
 
 ## SJ:s designsystem
 
@@ -221,7 +226,7 @@ npx -y playwright@latest screenshot --viewport-size=1440,900 --full-page http://
 
 Titta på bilderna. Interaktioner (klick, lager, formulär) kan du inte testa så. Be designern klicka igenom dem.
 
-- `npm run dev` startar prototypen på http://localhost:5173.
+- `npm run dev` startar prototypen, normalt på http://localhost:5173. **Läs porten som Vite skriver ut.** Är 5173 upptagen (till exempel av en annan prototyp) väljer Vite nästa lediga, som 5174. Byter du port i webbläsarverktyget: kontrollera att sidans adress verkligen ändrats, eller öppna en ny flik direkt på rätt port.
 - Visa ändringar i webbläsaren och kolla både mobil (375×812) och desktop (1440×900).
 - `npm run typecheck` ska gå igenom innan något committas eller delas. Det är mallens enda kvalitetsgrind. Tester behövs inte för prototyper.
 

@@ -23,7 +23,8 @@ const SKILLS = [
   },
 ];
 
-const { GH_HOST: _host, GH_ENTERPRISE_TOKEN: _token, ...withoutGhHost } = process.env;
+// Skillen är publik. Ta bort GitHub-inställningar som kan peka fel eller vara ogiltiga.
+const { GH_HOST: _host, GH_ENTERPRISE_TOKEN: _entToken, GH_TOKEN: _token, GITHUB_TOKEN: _ghToken, ...withoutGhHost } = process.env;
 
 let failed = 0;
 for (const skill of SKILLS) {

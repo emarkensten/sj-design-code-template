@@ -12,6 +12,10 @@ import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
 
 const isWin = process.platform === "win32";
+// --pre-install: körs av `npm run setup` före `npm install`, så trasiga beroenden stoppar inte.
+// --deps-only: körs efter installationen och kollar bara att alla beroenden faktiskt finns.
+const preInstall = process.argv.includes("--pre-install");
+const depsOnly = process.argv.includes("--deps-only");
 const rows = [];
 let blocking = 0;
 
@@ -35,6 +39,11 @@ function check(label, ok, detail, { required = true, fix } = {}) {
   if (!ok && required) blocking++;
   rows.push(`${status} ${label}${detail ? `  (${detail})` : ""}`);
   if (!ok && fix) rows.push(`        -> ${fix}`);
+}
+
+if (depsOnly) {
+  checkDependencies();
+  finish();
 }
 
 // Node
@@ -94,7 +103,11 @@ try {
   check("Bit-registret går att nå", false, "ingen kontakt", { fix: "Kolla internetuppkopplingen" });
 }
 
-if (existsSync("node_modules")) {
+function checkDependencies() {
+  if (!existsSync("node_modules")) {
+    check("Beroenden installerade (node_modules)", false, undefined, { required: false, fix: "npm install" });
+    return;
+  }
   // Varje beroende ska gå att ladda. Fångar halvfärdiga eller kopierade node_modules.
   const require = createRequire(`${process.cwd()}/`);
   const pkg = JSON.parse(readFileSync("package.json", "utf8"));
@@ -109,12 +122,12 @@ if (existsSync("node_modules")) {
       return true;
     }
   });
-  check("Beroenden installerade och hela", broken.length === 0, broken.length ? `trasiga: ${broken.slice(0, 4).join(", ")}${broken.length > 4 ? " …" : ""}` : undefined, {
-    fix: "npm ci   (installerar om allt från package-lock.json)",
+  check("Beroenden installerade och hela", broken.length === 0, broken.length ? `saknas eller trasiga: ${broken.slice(0, 4).join(", ")}${broken.length > 4 ? " …" : ""}` : undefined, {
+    required: !preInstall,
+    fix: "npm install   (hjälper det inte: npm ci)",
   });
-} else {
-  check("Beroenden installerade (node_modules)", false, undefined, { required: false, fix: "npm install" });
 }
+checkDependencies();
 check("Designskill impeccable installerad", existsSync(".claude/skills/impeccable"), undefined, {
   required: false,
   fix: "npm run skills",
@@ -132,11 +145,23 @@ check("Vercel CLI", !!vercel, vercel?.split("\n").pop(), {
   fix: "Behövs inte om du kopplar repot till Vercel via webben. Annars: npm i -g vercel",
 });
 
-console.log("\nMiljökoll för SJ-prototypmallen\n");
-console.log(rows.join("\n"));
-console.log(
-  blocking === 0
-    ? "\nAllt som krävs finns på plats."
-    : `\n${blocking} sak(er) måste fixas innan du kan köra igång. Be din kodagent om hjälp, eller läs docs/kom-igang.md.`,
-);
-process.exit(blocking === 0 ? 0 : 1);
+// Tokens i miljön går före gh:s sparade inloggning och kan vara gamla.
+if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
+  check("Ingen GH_TOKEN/GITHUB_TOKEN i miljön", false, "kan dölja din riktiga inloggning", {
+    required: false,
+    fix: "Får du inloggningsfel: kör gh-kommandon med  env -u GH_TOKEN -u GITHUB_TOKEN gh …",
+  });
+}
+
+finish();
+
+function finish() {
+  console.log(depsOnly ? "\nKontroll efter installation\n" : "\nMiljökoll för SJ-prototypmallen\n");
+  console.log(rows.join("\n"));
+  console.log(
+    blocking === 0
+      ? "\nAllt som krävs finns på plats."
+      : `\n${blocking} sak(er) måste fixas innan du kan köra igång. Be din kodagent om hjälp, eller läs docs/kom-igang.md.`,
+  );
+  process.exit(blocking === 0 ? 0 : 1);
+}

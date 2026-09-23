@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "setup": "node scripts/doctor.mjs && npm install && node scripts/sj-update.mjs && node scripts/setup-skills.mjs",
+    "setup": "node scripts/doctor.mjs --pre-install && npm install && node scripts/sj-update.mjs && node scripts/setup-skills.mjs && node scripts/doctor.mjs --deps-only",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
