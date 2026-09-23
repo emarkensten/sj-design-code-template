@@ -63,6 +63,10 @@ Knapphierarki (Sanity: *Knapphierarki*): **en huvudhandling per vy** med `FlowBu
 
 **SJ använder sällan kort.** Kort förekommer bara som färdiga kortkomponenter för ett visst syfte: `DepartureCard`, `JourneyCard`, `TicketCard`, `InformationCard`, `EditorialCard`, `PhotoCard`, `CampaignCard`, `ProductCard`, `SwitchCard`, `RadioCard`, `CheckboxCard`, `AccordionCard` och `ErrorSummaryCard`. Allt annat, som formulär, sektioner, listor och sammanfattningar, ligger direkt på sidan.
 
+### Travel
+
+Reskomponenterna används alltid före egna rader för resedata: `DepartureCard`, `JourneyCard`, `JourneySummary`, `RouteDescription`, `TransportSummary`, `TravelTime`, `PriceObject`, `TicketCard` och `StationPicker`. En detaljvy för en resa består av `JourneySummary` och `RouteDescription`, inte av egna rader med ikon och etikett. Se tabellen i AGENTS.md.
+
 ### Lists
 
 `List` + `ListItemButton` + `ListItemText` (+ `ListItemIcon` med chevron) och `Divider` mellan raderna.

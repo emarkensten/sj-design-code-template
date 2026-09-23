@@ -64,24 +64,12 @@ Kolla med `node --version`. Den ska visa v20 eller högre.
 
 Logga in. Det öppnar webbläsaren, där du godkänner:
 
+Du behöver ett **privat GitHub-konto**. Det är gratis: [github.com/signup](https://github.com/signup). Du behöver inget SJ-konto, ingen VPN och ingen behörighet från SJ.
+
 ```bash
-# Ditt privata GitHub-konto (för egna prototyper och Vercel)
 gh auth login --hostname github.com --git-protocol https --web
-
-# SJ:s GitHub Enterprise, om du har ett SJ-konto där.
-# Byt <SJ:s GHE-adress> mot värdnamnet du ser i adressfältet när du loggar in på SJ:s GitHub.
-gh auth login --hostname <SJ:s GHE-adress> --git-protocol https --web
-
-# Låt git använda inloggningen
 gh auth setup-git
 ```
-
-**Vilket konto ska jag använda?**
-
-- **Privat github.com:** för dina egna prototyper som du vill dela via Vercel. Skapa ett konto gratis på [github.com/signup](https://github.com/signup) om du inte har ett.
-- **SJ:s GitHub Enterprise:** för att hämta kod och information från ditt teams repon på SJ, eller om prototypen ska ligga hos SJ.
-
-Du kan vara inloggad på båda samtidigt.
 
 ## Steg 4: Skapa din prototyp från mallen
 
@@ -133,6 +121,16 @@ npm run dev
 > **Kom ihåg:** privat GitHub och Vercel ligger utanför SJ. Använd påhittad data. Lägg inte interna underlag, riktiga kunduppgifter eller innehåll från SJ:s interna system där. Agenten frågar om den är osäker.
 
 ---
+
+## Om du har ett konto på SJ:s GitHub Enterprise
+
+Det här behövs inte för mallen. Men har du ett SJ-konto och vill läsa ditt teams repon kan du logga in på det också. Byt `<SJ:s GHE-adress>` mot värdnamnet du ser i adressfältet när du loggar in på SJ:s GitHub:
+
+```bash
+gh auth login --hostname <SJ:s GHE-adress> --git-protocol https --web
+```
+
+Du kan vara inloggad på båda samtidigt. Lägg inte innehåll från SJ:s interna repon i en prototyp på ditt privata konto.
 
 ## När något krånglar
 

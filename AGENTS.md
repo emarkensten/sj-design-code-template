@@ -2,6 +2,8 @@
 
 Instruktioner för kodagenten (GitHub Copilot, Claude Code eller annan agent som läser `AGENTS.md`). `CLAUDE.md` importerar den här filen och lägger bara till det som är specifikt för Claude.
 
+**Den här filen går före dina allmänna arbetsflöden och process-skills** (till exempel brainstorming, writing-plans eller spec-driven development). Designern vill se något snabbt och iterera visuellt. Ställ högst tre korta frågor, bygg och visa. Skriv specifikationer, planer eller designdokument bara om designern ber om det.
+
 ## Vem du jobbar med
 
 Du jobbar med en **designer på SJ** som bygger klickbara prototyper i kod med SJ:s designsystem. Designern kan vara ny på terminal, git, npm och kodagenter. Det betyder att du ska:
@@ -27,17 +29,12 @@ Följ [docs/kom-igang.md](docs/kom-igang.md) och ta ett steg i taget tillsammans
 
 1. Git (på Mac via Homebrew eller Xcode Command Line Tools)
 2. Node.js LTS
-3. GitHub CLI (`gh`) och inloggning: privat github.com och/eller SJ:s GitHub Enterprise
+3. GitHub CLI (`gh`) och ett **privat, gratis konto på github.com**: `gh auth login --hostname github.com --git-protocol https --web`, sedan `gh auth setup-git`. Kontot behövs först när designern vill spara sin prototyp på GitHub och dela den via Vercel.
 4. Hämta mallen som ett eget repo, `npm run setup`, `npm run dev`
 
-**Fråga tidigt vilka GitHub-konton designern har.** Det avgör flödet:
+**Inget i mallen kräver SJ:s GitHub Enterprise, VPN eller SJ-konto.** Komponenter, MCP-servrar och typsnitt hämtas publikt. De flesta designers har inget GHE-konto, så nämn det inte om designern inte tar upp det själv. Har designern ett och vill läsa teamets repon: se "SJ:s GitHub Enterprise" längre ned.
 
-| Konto | Används till | Inloggning |
-|---|---|---|
-| Privat konto på github.com | Egna prototyper, koppling till Vercel för att dela länkar | `gh auth login --hostname github.com --git-protocol https --web` |
-| SJ-konto på SJ:s GitHub Enterprise | Läsa och bidra i teamens repon på SJ | `gh auth login --hostname <SJ:s GHE-adress> --git-protocol https --web` |
-
-`<SJ:s GHE-adress>` är värdnamnet i adressfältet när designern loggar in på SJ:s GitHub, utan `https://`. Fråga designern efter det. Det står inte i mallen, eftersom mallen är publik. Båda kontona kan vara inloggade samtidigt. Kör `gh auth setup-git` efter inloggning, så använder git samma inloggning.
+**Använd alltid full github.com-adress.** Copilots inbyggda GitHub-koppling och `gh` kan vara inställda på SJ:s GitHub Enterprise (till exempel via miljövariabeln `GH_HOST`). Då leder kortformer som `ägare/repo` fel och ger 404 eller inloggningsfel. Skriv `https://github.com/ägare/repo`, eller sätt `GH_HOST=github.com` framför `gh`-kommandon.
 
 ## Innan du designar något: fråga efter Figma
 
@@ -128,6 +125,26 @@ Installera paket med `npm run sj:add` och kör aldrig `npm install <paket>` på 
 
 Mer finns i skillens `references/design-philosophy.md`, `design-layout.md` och `design-prominence.md`, och i Storybooks `guidelines-*`.
 
+### Reskomponenter: använd dem före egna rader
+
+SJ har färdiga komponenter för nästan allt som rör en resa. **Bygg aldrig egna rader med ikon, etikett och värde** ("Datum", "Tid", "Tåg", "Spår") för resedata. Det räknas som handrullat, och SJ:s komponenter gör det bättre, med rätt format, skärmläsartext och störningslägen. Kolla tabellen och Storybook (`docs-list`, sök på `atoms`, `card` och `progress`) innan du bygger något för resor.
+
+| Innehåll | Komponent (`@sj-ab/component-library.ui.*`) |
+|---|---|
+| Avgångar att välja bland | `departure-card` |
+| En bokad resa i en lista | `journey-card` |
+| Resans stopp, tider, spår och ändringar (tidslinje) | `route-description` |
+| Sammanfattning av en resa: från–till, tider, restid | `journey-summary`, eller `list-item-journey-summary` i en lista |
+| Tågtyp, tågnummer, service ombord | `transport-summary`, `transport-details` |
+| Tågbild | `transport-image` |
+| Restid och byten | `travel-time` |
+| Pris | `price-object` |
+| Biljett | `ticket-card` |
+| Välja station från–till | `station-picker` |
+| Välja datum | `date-picker` |
+
+**Detaljvy för en resa**, till exempel i ett `Sheet`: börja med `journey-summary` överst och sedan `route-description` för tidslinjen. Lägg bara det som inte täcks av komponenterna i en vanlig `List` med `ListItemText`, till exempel bokningsnummer eller vagn och plats. Handlingar (visa biljett, boka om) läggs sist.
+
 ### Vertikalt avstånd: `Stack` med `useFlexGap`
 
 **Skriv alltid `<Stack useFlexGap spacing={…}>`.** Utan `useFlexGap` lägger MUI:s `Stack` avståndet som `margin-top` på varje barn. Många SJ-komponenter sätter sin egen `margin` (till exempel `FormControlLabel`, och `TextButton` med `negativeMargins`), och då skrivs avståndet över tyst. I mallen blev 24px mellan två sektioner till 0px. Med `useFlexGap` blir avståndet CSS-`gap`, som barnens marginaler inte påverkar. Det gäller både SJ:s `Stack` och MUI:s.
@@ -165,6 +182,9 @@ Ett vanligt fel. Komponenter med en inre klickyta hamnar indragna i förhålland
 - **`DepartureCard`:** `producer` och `productName` skrivs ut bredvid varandra, så `productName` ska vara `"Snabbtåg"` och inte `"SJ Snabbtåg"`. `active` ändrar bara ramen. Lägg till `CardActionAreaProps={{ "aria-pressed": vald }}` för skärmläsare. Det finns ingen markering för ankomst nästa dag.
 - **`JourneyCard` med handlingar:** i version 6.2.x når `onClick` inte fram till kortet. Använd SJ:s eget mönster från Storybooks störningsexempel: `clickable={false}` och en `List` som barn med `ListItemButton`-rader, till exempel "Visa resa" och "Boka om eller avboka", med `Divider` mellan raderna.
 - **En prop som typas men inte fungerar:** gör ett klick eller en ändring ingenting, läs komponentens `dist/*.js` och kolla att prop:en faktiskt plockas ut eller skickas vidare. TypeScript märker inte det här.
+- **`AppBar` `navigationButtons` är en tuple**, till exempel en enda Stäng-knapp: `[{ label, variant: "close", action }]`. En array som byggs i en variabel breddas av TypeScript till en vanlig lista och avvisas. Skriv den direkt i JSX, eller typa variabeln som `AppBarProps["navigationButtons"]`.
+- **SJ:s `Switch` har rollen `switch`**, inte `checkbox`, i tillgänglighetsträdet. Det är viktigt att veta vid tester.
+- **`npm run build` varnar för stora filer** eftersom SJ:s tågillustrationer följer med. Det är väntat för en prototyp. Lägg inte till koddelning för att få bort varningen.
 - **`BottomBarContainer`** har `position: fixed`. Ge `main` luft nedtill (`PageLayout` gör det när du skickar med `bottomBar`).
 - **`List`** tar inte `disablePadding`. För att linjera en ensam rad: `disableGutters` på `ListItemButton`.
 - **"Invalid hook call" eller dubbla Emotion-varningar direkt efter att du installerat ett paket** beror på att Vite bygger om sina beroenden. Ladda om sidan. Hjälper inte det: starta om `npm run dev`.
@@ -182,6 +202,16 @@ Ett vanligt fel. Komponenter med en inre klickyta hamnar indragna i förhålland
 ## Titta på resultatet
 
 **Klicka dig igenom varje interaktion** (knappar, kort, lager som öppnas och stängs, formulär) i webbläsaren innan du säger att något är klart. Kan du inte styra en webbläsare i sessionen: säg det rakt ut, och be designern klicka igenom de konkreta sakerna du listar.
+
+**Om du saknar ett webbläsarverktyg:** ta skärmdumpar med Playwright via npx. Installera inga Python-paket.
+
+```bash
+npx -y playwright@latest install chromium
+npx -y playwright@latest screenshot --viewport-size=375,812 --full-page http://localhost:5173/ mobil.png
+npx -y playwright@latest screenshot --viewport-size=1440,900 --full-page http://localhost:5173/ desktop.png
+```
+
+Titta på bilderna. Interaktioner (klick, lager, formulär) kan du inte testa så. Be designern klicka igenom dem.
 
 - `npm run dev` startar prototypen på http://localhost:5173.
 - Visa ändringar i webbläsaren och kolla både mobil (375×812) och desktop (1440×900).

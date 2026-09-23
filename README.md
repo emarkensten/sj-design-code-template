@@ -1,5 +1,18 @@
 # SJ-prototypmall
 
+> ## Till kodagenten (Copilot, Claude och andra): börja här
+>
+> Designern har gett dig länken till en **mall**. Läs inte bara om den, och skriv inga specifikationer eller planer ännu. Gör så här, i den här ordningen:
+>
+> 1. **Kolla att git och Node finns** (`git --version`, `node --version`). Saknas något: hjälp designern installera det enligt [docs/kom-igang.md](https://github.com/emarkensten/sj-design-code-template/blob/main/docs/kom-igang.md), steg 1–2.
+> 2. **Skapa designerns egen kopia och hämta den:**
+>    - Är designern inloggad på github.com (`gh auth status --hostname github.com`): `GH_HOST=github.com gh repo create <namn> --template emarkensten/sj-design-code-template --private --clone`, och gå in i mappen.
+>    - Annars: `git clone https://github.com/emarkensten/sj-design-code-template.git <namn>` och gå in i mappen. Mallen är publik, så ingen inloggning behövs. En egen kopia på GitHub kan kopplas senare, när designern vill dela.
+>    - Använd full github.com-adress. Din inbyggda GitHub-koppling och `gh` kan vara inställda på SJ:s GitHub Enterprise, och då hittar de inte mallen.
+>    - Kopiera inte filerna till en mapp utan git.
+> 3. **Kör `npm run setup`** i mappen.
+> 4. **Läs `AGENTS.md` och följ den** från och med nu. Den går före dina allmänna arbetsflöden och skills (till exempel brainstorming eller writing-plans).
+
 En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s designsystem**, tillsammans med en kodagent (Claude Code eller GitHub Copilot).
 
 - **SJ:s riktiga komponenter** från Bit, alltid på senaste versionen

@@ -17,15 +17,20 @@ const SKILLS = [
     // frontend-design valdes bort: den handlar om att välja egna typsnitt och färger,
     // vilket krockar med designsystemet.
     label: "impeccable: designgranskning (critique, audit, layout, polish)",
-    args: ["pbakaus/impeccable"],
+    // Full adress: kortformen "pbakaus/impeccable" följer GH_HOST och hamnar
+    // på SJ:s GitHub Enterprise i miljöer där den är satt (t.ex. Copilot).
+    args: ["https://github.com/pbakaus/impeccable"],
   },
 ];
+
+const { GH_HOST: _host, GH_ENTERPRISE_TOKEN: _token, ...withoutGhHost } = process.env;
 
 let failed = 0;
 for (const skill of SKILLS) {
   console.log(`\nInstallerar ${skill.label}`);
   const result = spawnSync(npx, ["-y", "skills@latest", "add", ...skill.args, ...AGENTS, "-y"], {
     stdio: ["ignore", "inherit", "inherit"],
+    env: withoutGhHost,
     shell,
   });
   if (result.status !== 0) failed++;
