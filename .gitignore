@@ -1,0 +1,24 @@
+# Beroenden och bygge
+node_modules
+dist
+*.tsbuildinfo
+.vite
+
+# Lokala filer och hemligheter
+.env
+.env.*
+!.env.example
+*.local
+.DS_Store
+.vercel
+
+# Skills som installeras av `npm run setup` (hämtas färska, checkas inte in).
+# sj-design-system checkas in eftersom den är mallens egen.
+.agents/
+.claude/skills/*
+!.claude/skills/sj-design-system/
+skills-lock.json
+.claude/settings.local.json
+
+# Loggar
+*.log

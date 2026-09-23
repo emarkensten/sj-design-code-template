@@ -1,0 +1,13 @@
+{
+  "servers": {
+    "sj-design-system": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "@sj-ab/component-library.internal.design-system-mcp@latest", "mcp"]
+    },
+    "sj-storybook": {
+      "type": "http",
+      "url": "https://main--65536a05e6a2962fb1c551cc.chromatic.com/mcp"
+    }
+  }
+}
