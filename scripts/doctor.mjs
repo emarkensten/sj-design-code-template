@@ -49,12 +49,12 @@ if (depsOnly) {
 // Node
 const nodeMajor = Number(process.versions.node.split(".")[0]);
 check("Node.js 20 eller senare", nodeMajor >= 20, `v${process.versions.node}`, {
-  fix: "Installera Node LTS, se docs/kom-igang.md steg 2",
+  fix: "Mac: kör scripts/bootstrap.sh. Annars docs/kom-igang.md steg 2",
 });
 
 // Git
 const gitVersion = run("git", ["--version"]);
-check("Git", !!gitVersion, gitVersion ?? undefined, { fix: "Se docs/kom-igang.md steg 1" });
+check("Git", !!gitVersion, gitVersion ?? undefined, { fix: "Mac: kör scripts/bootstrap.sh. Annars docs/kom-igang.md steg 1" });
 if (gitVersion) {
   const name = run("git", ["config", "--global", "user.name"]);
   const email = run("git", ["config", "--global", "user.email"]);
@@ -67,7 +67,7 @@ if (gitVersion) {
 const ghVersion = run("gh", ["--version"]);
 check("GitHub CLI (gh)", !!ghVersion, ghVersion?.split("\n")[0], {
   required: false,
-  fix: "Gör inloggning mot GitHub mycket enklare. Se docs/kom-igang.md steg 3",
+  fix: "Gör inloggning mot GitHub mycket enklare. Mac: bash scripts/bootstrap.sh --no-project",
 });
 if (ghVersion) {
   const personal = run("gh", ["auth", "status", "--hostname", "github.com"]);
@@ -142,7 +142,7 @@ check("Claude Code (terminal)", !!claude, claude ?? undefined, {
 const vercel = run("vercel", ["--version"]);
 check("Vercel CLI", !!vercel, vercel?.split("\n").pop(), {
   required: false,
-  fix: "Behövs inte om du kopplar repot till Vercel via webben. Annars: npm i -g vercel",
+  fix: "Behövs inte om du kopplar repot till Vercel via webben. Annars räcker npx vercel@latest",
 });
 
 // Tokens i miljön går före gh:s sparade inloggning och kan vara gamla.

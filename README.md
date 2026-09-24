@@ -5,7 +5,7 @@
 > Designern har gett dig länken till en **mall**. Läs inte bara om den, och skriv inga specifikationer eller planer ännu. Gör så här, i den här ordningen:
 >
 > 0. **Kör du i GitHub Codespaces** (miljövariabeln `CODESPACES` är `true`), eller är mallens mapp redan öppen? Då finns allt redan. Hoppa direkt till steg 5.
-> 1. **Kolla att git och Node finns** (`git --version`, `node --version`). Saknas något: hjälp designern installera det enligt [docs/kom-igang.md](https://github.com/emarkensten/sj-design-code-template/blob/main/docs/kom-igang.md), steg 1–2.
+> 1. **Kolla att git och Node finns** (`git --version`, `node --version`). Saknas något **på Mac** och är mappen tom: kör `curl -fsSL https://raw.githubusercontent.com/emarkensten/sj-design-code-template/main/scripts/bootstrap.sh | bash -s -- --here --no-vercel` i bakgrunden och läs utskriften medan det går. Skriptet installerar git (designern klickar *Installera* i en ruta), Node och GitHub CLI utan administratörslösenord, loggar in på GitHub (ge designern engångskoden som skrivs ut), skapar ett privat repo från mallen i mappen och kör `npm run setup`. Homebrew kräver lösenord och hoppas över när du kör skriptet. Vill designern ha det: be hen köra samma rad utan `-s -- --here --no-vercel` i Terminal. Gå sedan direkt till steg 4. På Windows: hjälp designern enligt [docs/kom-igang.md](https://github.com/emarkensten/sj-design-code-template/blob/main/docs/kom-igang.md), steg 1–2.
 > 2. **Hämta mallen till mappen du redan står i, om det går.** Då räcker det att designern startar en ny chatt i samma mapp efteråt. Med en undermapp måste hen också byta mapp, och det är lätt att tappa bort sig där.
 >    - **Är mappen tom** (`ls -A` visar inget, eller bara `.DS_Store` eller `.claude`): hämta in i den med `.` som mål: `git clone https://github.com/emarkensten/sj-design-code-template.git .`. Mallen är publik, så ingen inloggning behövs. En egen kopia på GitHub kan kopplas senare, när designern vill dela.
 >    - **Är mappen inte tom** (till exempel hemmappen): hämta inte in där. Föreslå att designern skapar en tom mapp, till exempel `Dokument/min-prototyp`, öppnar den i Claude-appen eller VS Code och klistrar in länken igen. Vill hen hellre fortsätta här: klona till en undermapp och säg tydligt att nästa chatt ska startas i just den mappen.
@@ -26,17 +26,19 @@ En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s desi
 
 ## Snabbstart
 
-### Enklast: i webbläsaren, utan att installera något
+### Snabbast på Mac: ett kommando
 
-1. Klicka **Use this template** uppe till höger på den här sidan och välj **Open in a codespace**.
-2. Vänta några minuter medan miljön byggs och allt installeras.
-3. Öppna Copilot-chatten (eller Claude Code) och skriv vad du vill bygga.
+Öppna **Terminal** (Cmd+Mellanslag, skriv "Terminal") och klistra in:
 
-Codespaces är gratis upp till en viss mängd användning per månad på ett privat GitHub-konto.
+```bash
+curl -fsSL https://raw.githubusercontent.com/emarkensten/sj-design-code-template/main/scripts/bootstrap.sh | bash
+```
 
-### På din egen dator
+Skriptet installerar Homebrew (om du är administratör), git, Node och GitHub CLI, loggar in dig på GitHub, skapar din prototyp som ett privat repo och installerar SJ:s komponenter. Du skriver ditt datorlösenord en gång och klickar *Authorize* när det behövs. Öppna sedan mappen i Claude-appen. Mer i [docs/kom-igang.md](docs/kom-igang.md).
 
-Enklast med en kodagent: skapa en **tom mapp** (till exempel `Dokument/min-prototyp`), öppna den i Claude-appen eller i VS Code och klistra in länken till den här sidan. Agenten hämtar mallen till mappen och installerar allt. Sedan startar du en ny chatt i samma mapp.
+### Med en kodagent
+
+Alternativt: skapa en **tom mapp** (till exempel `Dokument/min-prototyp`), öppna den i Claude-appen eller i VS Code och klistra in länken till den här sidan. Agenten hämtar mallen till mappen och installerar allt. Sedan startar du en ny chatt i samma mapp.
 
 Har du redan mallen: kör
 
@@ -48,7 +50,7 @@ npm run setup
 npm run dev
 ```
 
-Är datorn ny eller saknar du git eller Node? Läs [docs/kom-igang.md](docs/kom-igang.md), eller öppna mappen i din kodagent och skriv: *"Hjälp mig komma igång"*.
+Är datorn ny eller saknar du git eller Node? Läs [docs/kom-igang.md](docs/kom-igang.md), eller öppna mappen i din kodagent och skriv: *"Hjälp mig komma igång"*. Går det inte att installera något alls finns GitHub Codespaces som reserv (se samma guide).
 
 ## Hur det hänger ihop
 
@@ -60,12 +62,14 @@ npm run dev
 | `.mcp.json`, `.vscode/mcp.json` | SJ:s Storybook-MCP och design-system-MCP |
 | `.claude/skills/sj-design-system/` | SJ:s konventioner, UX-writing och designprinciper |
 | [DESIGN.md](DESIGN.md) / [PRODUCT.md](PRODUCT.md) | SJ:s visuella regler och prototypens syfte (läses av agenten och av impeccable) |
+| [scripts/bootstrap.sh](scripts/bootstrap.sh) | Sätter upp en ny Mac med ett kommando: Homebrew, git, Node, GitHub och prototypen |
 | [docs/kom-igang.md](docs/kom-igang.md) | Steg för steg från tom dator till delad prototyp |
 
 ## Kommandon
 
 | | |
 |---|---|
+| `bash scripts/bootstrap.sh --no-project` | Installera eller laga verktygen (Homebrew, Node, gh) och GitHub-inloggningen |
 | `npm run doctor` | Kolla att datorn har allt |
 | `npm run dev` | Starta prototypen på localhost:5173 |
 | `npm run sj:add -- departure-card` | Lägg till en SJ-komponent |

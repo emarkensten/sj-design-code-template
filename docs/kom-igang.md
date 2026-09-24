@@ -6,21 +6,6 @@ Du skriver kommandon i **Terminal** (Mac: Cmd+Mellanslag, skriv "Terminal") elle
 
 ---
 
-## Enklast: GitHub Codespaces (ingen installation)
-
-Vill du slippa installera något kan du köra allt i webbläsaren. Du behöver bara ett gratis GitHub-konto ([github.com/signup](https://github.com/signup)).
-
-1. Öppna mallen: [github.com/emarkensten/sj-design-code-template](https://github.com/emarkensten/sj-design-code-template)
-2. Klicka **Use this template → Open in a codespace**.
-3. Vänta medan miljön byggs. Git, Node, SJ:s komponenter och designskillen installeras automatiskt.
-4. Öppna Copilot-chatten och skriv vad du vill bygga, till exempel *"Gör en sida där resenären ser sina kommande resor"*.
-5. Prototypen öppnas i en förhandsvisning. Du kan också öppna den i en egen flik via fliken *Ports*.
-6. **Spara ditt arbete:** gå till *Source Control* till vänster, skriv ett meddelande, klicka *Commit* och sedan *Publish Branch → Publish to GitHub private repository*. Då får du ett eget repo, som du sedan kan koppla till Vercel (steg 7).
-
-Codespaces ingår gratis upp till en viss mängd timmar per månad. Stäng din codespace när du är klar ([github.com/codespaces](https://github.com/codespaces)), så räcker timmarna längre.
-
-Vill du hellre jobba på din egen dator: följ stegen nedan.
-
 ## Steg 0: Välj kodagent
 
 | | Claude Code | GitHub Copilot |
@@ -31,6 +16,27 @@ Vill du hellre jobba på din egen dator: följ stegen nedan.
 | **Installera** | Appen: [claude.com/download](https://claude.com/download). Terminal: `curl -fsSL https://claude.ai/install.sh \| bash` | [code.visualstudio.com](https://code.visualstudio.com), sedan Copilot-tillägget |
 
 Mallen fungerar med båda. Instruktionerna står i `AGENTS.md`, som båda läser.
+
+## Snabbast på Mac: ett kommando
+
+Öppna **Terminal** (Cmd+Mellanslag, skriv "Terminal"), klistra in raden och tryck Enter:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/emarkensten/sj-design-code-template/main/scripts/bootstrap.sh | bash
+```
+
+Skriptet gör steg 1 till 5 nedan, och steg 7 om du vill. Det här gör du själv:
+
+1. **Homebrew eller inte.** Är ditt konto administratör frågar skriptet om det ska installera Homebrew. Svara ja och skriv ditt datorlösenord (det syns inte medan du skriver). Det behövs bara en gång, sedan kan Claude installera till exempel ffmpeg eller en databas åt dig i andra projekt. Saknar du administratörsbehörighet hoppas Homebrew över och allt annat fungerar ändå. Då dyker en ruta om utvecklarverktyg upp: klicka *Installera* (ger git, tar 5 till 15 minuter).
+2. **Logga in på GitHub.** Webbläsaren öppnas, koden som visas i Terminal är redan kopierad. Klistra in den och klicka *Authorize*. Har du inget konto: skapa ett gratis på [github.com/signup](https://github.com/signup) först.
+3. **Döp prototypen**, till exempel `mina-resor`. Den hamnar i `Dokument/mina-resor` och som ett privat repo på ditt GitHub-konto.
+4. **Välj om du vill dela den på Vercel direkt.** Svarar du ja loggar du in med GitHub där också. Du kan göra det senare.
+
+Öppna sedan Claude-appen, fliken *Code*, starta en ny chatt och välj mappen. Klart.
+
+Det går att köra skriptet igen när som helst, till exempel om något avbröts. Det som redan är klart hoppas över. Vill du välja namnet direkt: lägg till `-s -- --name mina-resor` efter `bash`.
+
+Vill du hellre göra det för hand, eller har du Windows: följ stegen nedan.
 
 ## Steg 1: Git
 
@@ -150,6 +156,19 @@ gh auth login --hostname <SJ:s GHE-adress> --git-protocol https --web
 ```
 
 Du kan vara inloggad på båda samtidigt. Lägg inte innehåll från SJ:s interna repon i en prototyp på ditt privata konto.
+
+## Reserv: GitHub Codespaces (inget installeras)
+
+Går det inte att installera något på datorn kan du köra allt i webbläsaren i stället. Då jobbar du i VS Code med Copilot, inte i Claude-appen. Du behöver bara ett gratis GitHub-konto ([github.com/signup](https://github.com/signup)).
+
+1. Öppna mallen: [github.com/emarkensten/sj-design-code-template](https://github.com/emarkensten/sj-design-code-template)
+2. Klicka **Use this template → Open in a codespace**.
+3. Vänta medan miljön byggs. Git, Node, SJ:s komponenter och designskillen installeras automatiskt.
+4. Öppna Copilot-chatten och skriv vad du vill bygga, till exempel *"Gör en sida där resenären ser sina kommande resor"*.
+5. Prototypen öppnas i en förhandsvisning. Du kan också öppna den i en egen flik via fliken *Ports*.
+6. **Spara ditt arbete:** gå till *Source Control* till vänster, skriv ett meddelande, klicka *Commit* och sedan *Publish Branch → Publish to GitHub private repository*. Då får du ett eget repo, som du sedan kan koppla till Vercel (steg 7).
+
+Codespaces ingår gratis upp till en viss mängd timmar per månad. Stäng din codespace när du är klar ([github.com/codespaces](https://github.com/codespaces)), så räcker timmarna längre.
 
 ## När något krånglar
 

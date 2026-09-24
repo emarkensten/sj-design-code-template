@@ -45,19 +45,22 @@ Fyll i sökvägen och beställningen själv, så att designern bara behöver kop
 
 ## Första gången på en ny dator
 
-Följ [docs/kom-igang.md](docs/kom-igang.md) och ta ett steg i taget tillsammans med designern. Kör `npm run doctor` efter varje steg så att ni ser att det gick igenom (det går först när Node finns). Kortversionen:
+**På Mac: använd `scripts/bootstrap.sh`.** Det tar datorn från tom till körbar prototyp. Är designern administratör och kör i Terminal erbjuder det Homebrew först (lösenordet behövs en gång, sedan kan du själv köra `brew install` för till exempel ffmpeg eller en databas i senare projekt). Annars hamnar Node och GitHub CLI i `~/.local` utan lösenord. PATH och `brew shellenv` skrivs till `~/.zprofile`, och skriptet loggar in på GitHub, sätter git-namn och mejl (GitHubs noreply-adress), skapar ett privat repo från mallen, kör `npm run setup` och kopplar valfritt till Vercel. Det kan köras om, klara steg hoppas över. Designern gör bara tre saker: skriver lösenordet för Homebrew eller klickar *Installera* i rutan för utvecklarverktygen, godkänner GitHub i webbläsaren och, om hen vill dela, godkänner Vercel.
 
-1. Homebrew och git
-2. Node.js LTS
-3. GitHub CLI (`gh`) och ett **privat, gratis konto på github.com**: `gh auth login --hostname github.com --git-protocol https --web`, sedan `gh auth setup-git`. Kontot behövs först när designern vill spara sin prototyp på GitHub och dela den via Vercel.
-4. Hämta mallen som ett eget repo, `npm run setup`, `npm run dev`
+- **Enklast för designern:** be hen öppna appen *Terminal* (Cmd+Mellanslag, skriv "Terminal") och klistra in raden nedan. Då fungerar alla frågor och båda inloggningarna.
 
-**Saknas Node, git och Homebrew helt?** Det är vanligt på en ny designerdator, eftersom Claude-appen inte behöver något av dem. Kolla med `command -v brew node git` och gör så här på Mac:
+  ```bash
+  curl -fsSL https://raw.githubusercontent.com/emarkensten/sj-design-code-template/main/scripts/bootstrap.sh | bash
+  ```
 
-1. **Homebrew** kräver designerns lösenord i en riktig terminal, så det kan du inte köra själv. Ge hen kommandot i [docs/kom-igang.md](docs/kom-igang.md) steg 1 i ett eget kodblock. Be hen klistra in det i appen *Terminal* (Cmd+Mellanslag, skriv "Terminal"), skriva sitt datorlösenord (det syns inte medan man skriver) och köra de två raderna som skrivs ut på slutet. Homebrew installerar Xcode Command Line Tools på vägen, och då följer **git** med.
-2. När designern säger att det är klart: kör själv `brew install node gh` (öppna ett nytt skal om `brew` inte hittas).
-3. **Saknar designern administratörsbehörighet** stoppar Homebrew. Kör då `xcode-select --install` för git (en ruta dyker upp, designern klickar *Installera*) och be designern hämta Node via SJ:s *Self Service* eller IT. Föreslå Codespaces (se ovan) om det dröjer.
-4. Kör `npm run doctor` och gå vidare när den är grön. Säg gärna att Homebrew och git är bra att ha kvar till nästa prototyp.
+- **Kör du det själv** (designern har öppnat en tom mapp i Claude-appen): `curl -fsSL <adressen ovan> | bash -s -- --here --no-vercel`. Kör det i bakgrunden och läs utskriften medan det går. Utan terminal frågar skriptet ingenting. Vid GitHub-inloggningen öppnar det webbläsaren och skriver ut en engångskod (den kopieras också till urklipp). Ge designern koden direkt. Saknas git ber du hen klicka *Installera* i rutan som dyker upp. Homebrew och Vercel kräver ett Terminal-fönster och hoppas över. Vill designern ha dem: be hen köra raden ovan i Terminal (klara steg hoppas över).
+- **Behöver du Homebrew senare och det saknas:** du kan inte installera det själv (sudo). Be designern köra `bash scripts/bootstrap.sh --no-project` i Terminal, eller raden ovan.
+- **Finns mallen redan lokalt:** `bash scripts/bootstrap.sh --no-project` fixar bara verktygen och inloggningen.
+- **Stoppar skriptet:** läs raden efter `Stopp:`. Vanligast är att Xcode finns men licensen inte är godkänd, eller att designern saknar administratörsbehörighet för utvecklarverktygen. Då behövs Self Service eller IT.
+
+Kör `npm run doctor` efteråt. Skriptet går efter `npm run setup`, så det obligatoriska stoppet för omstart (ovan) gäller också här.
+
+**På Windows, eller om skriptet inte går att använda:** följ [docs/kom-igang.md](docs/kom-igang.md) steg för steg tillsammans med designern: git, Node.js LTS, GitHub CLI (`gh auth login --hostname github.com --git-protocol https --web`, sedan `gh auth setup-git`), och sist mallen och `npm run setup`. Kör `npm run doctor` efter varje steg.
 
 **Inget i mallen kräver SJ:s GitHub Enterprise, VPN eller SJ-konto.** Komponenter, MCP-servrar och typsnitt hämtas publikt. De flesta designers har inget GHE-konto, så nämn det inte om designern inte tar upp det själv. Har designern ett och vill läsa teamets repon: se "SJ:s GitHub Enterprise" längre ned.
 
@@ -335,6 +338,7 @@ Följ mallen i filen: datum, vad som hände, hur det löstes och ett förslag. H
 
 | Kommando | Gör |
 |---|---|
+| `bash scripts/bootstrap.sh` | Sätter upp en ny Mac: Homebrew, git, Node, gh, GitHub-inloggning, prototyp (`--no-project` för bara verktygen) |
 | `npm run doctor` | Kollar datorn: git, Node, GitHub-inloggningar, Bit-registret |
 | `npm run setup` | Allt på en gång: doctor, install, uppdatera SJ-paket, skills |
 | `npm run dev` | Startar prototypen lokalt |
@@ -359,7 +363,7 @@ src/
   i18n/sv.ts                alla texter i gränssnittet
 DESIGN.md                SJ:s visuella regler (läses av impeccable och av dig)
 PRODUCT.md               vem prototypen är för och varför (fylls i per prototyp)
-scripts/                 hjälpskript (doctor, sj-add, sj-update, skills)
+scripts/                 hjälpskript (bootstrap för ny Mac, doctor, sj-add, sj-update, skills)
 .claude/skills/sj-design-system/  SJ-skillen (incheckad)
 .mcp.json                MCP-servrar för Claude Code
 .vscode/mcp.json         samma MCP-servrar för Copilot i VS Code
