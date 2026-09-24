@@ -311,7 +311,7 @@ Designern vet ofta inte att det här finns. Föreslå det när det passar, kort 
 
 | Vad | När du föreslår det | Claude Code | GitHub Copilot (VS Code) |
 |---|---|---|---|
-| **Figma** (MCP) | Så fort Figma nämns eller en figma.com-länk dyker upp | `claude plugin install figma@claude-plugins-official` | Lägg till Figmas MCP-server via *MCP: Add Server* (https://mcp.figma.com/mcp) |
+| **Figma** (MCP) | Så fort Figma nämns eller en figma.com-länk dyker upp | Förinställd i `.claude/settings.json` (`enabledPlugins`): Claude frågar om installationen när mappen öppnas. Tackade designern nej: `claude plugin install figma@claude-plugins-official` | Lägg till Figmas MCP-server via *MCP: Add Server* (https://mcp.figma.com/mcp) |
 | **impeccable** (skill) | Ny vy utan Figma (`shape`), eller en klar vy som ska granskas (`critique`, `audit`) | Installeras av `npm run skills` | Samma |
 | **Atlassian** (Jira + Confluence) | Designern nämner ett Jira-ärende, en story eller en Confluence-sida | `claude plugin install atlassian@claude-plugins-official` | Atlassians MCP-server via *MCP: Add Server* |
 | **Vercel** | Designern vill dela en länk eller undrar varför en deploy failar | `claude plugin install vercel@claude-plugins-official` | Vercel-appen på github.com räcker |

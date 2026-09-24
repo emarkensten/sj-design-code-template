@@ -25,6 +25,9 @@
       }
     ]
   },
+  "enabledPlugins": {
+    "figma@claude-plugins-official": true
+  },
   "enabledMcpjsonServers": [
     "sj-design-system",
     "sj-storybook"
