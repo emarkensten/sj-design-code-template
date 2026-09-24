@@ -22,3 +22,12 @@ skills-lock.json
 
 # Loggar
 *.log
+
+# impeccable: bara listan över kända falsklarm checkas in, inte granskningarnas arkiv
+.impeccable/*
+!.impeccable/critique/
+.impeccable/critique/*
+!.impeccable/critique/ignore.md
+
+# Skärmdumpar från npm run screenshots
+screenshots/

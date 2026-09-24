@@ -27,4 +27,6 @@ if (!existsSync(".claude/skills/impeccable")) {
   notes.push("Designskillen impeccable saknas: kör `npm run skills`.");
 }
 
+notes.push("Testperiod: skriv ned allt som krånglar med mallen i feedback-till-mallen.md (se AGENTS.md).");
+
 console.log(`[SJ-mall] ${notes.join("\n[SJ-mall] ")}`);

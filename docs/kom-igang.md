@@ -44,11 +44,13 @@ Vill du hellre ha **Homebrew** (en "app store" för utvecklarverktyg, bra att ha
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
 
-Följ instruktionerna som skrivs ut på slutet (två rader som börjar med `echo` och `eval`), annars hittar Terminal inte `brew`. Installera sedan git:
+Den frågar efter ditt datorlösenord (det syns inte medan du skriver). Följ instruktionerna som skrivs ut på slutet (två rader som börjar med `echo` och `eval`), annars hittar Terminal inte `brew`. Homebrew installerar Command Line Developer Tools på vägen, så git finns redan. Vill du ha senaste versionen:
 
 ```bash
 brew install git
 ```
+
+Homebrew och git är bra att ha kvar även efter prototypen, till exempel om du vill prova fler verktyg.
 
 > **SJ-dator utan administratörsbehörighet?** Homebrew kräver admin. Använd Command Line Developer Tools ovan, installera Node från nodejs.org (steg 2) och hoppa över Homebrew. Blir det stopp: fråga IT eller använd *Self Service* om din dator har det.
 
@@ -87,6 +89,8 @@ gh auth setup-git
 ```
 
 ## Steg 4: Skapa din prototyp från mallen
+
+**Enklast med kodagenten:** skapa en tom mapp, till exempel `Dokument/min-prototyp`. Öppna den i Claude-appen (välj mappen när du startar en ny chatt) eller i VS Code (*File → Open Folder*) och klistra in länken till mallen. Agenten hämtar mallen till just den mappen och installerar allt. När den ber dig starta om: starta en ny chatt i **samma mapp**.
 
 **På webben:** öppna mallens repo på GitHub, klicka *Use this template → Create a new repository*, välj ditt konto, ge det ett namn och välj **Private**.
 

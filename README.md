@@ -6,13 +6,14 @@
 >
 > 0. **Kör du i GitHub Codespaces** (miljövariabeln `CODESPACES` är `true`), eller är mallens mapp redan öppen? Då finns allt redan. Hoppa direkt till steg 5.
 > 1. **Kolla att git och Node finns** (`git --version`, `node --version`). Saknas något: hjälp designern installera det enligt [docs/kom-igang.md](https://github.com/emarkensten/sj-design-code-template/blob/main/docs/kom-igang.md), steg 1–2.
-> 2. **Skapa designerns egen kopia och hämta den:**
->    - Är designern inloggad på github.com (`gh auth status --hostname github.com`): `GH_HOST=github.com gh repo create <namn> --template emarkensten/sj-design-code-template --private --clone`, och gå in i mappen.
->    - Annars: `git clone https://github.com/emarkensten/sj-design-code-template.git <namn>` och gå in i mappen. Mallen är publik, så ingen inloggning behövs. En egen kopia på GitHub kan kopplas senare, när designern vill dela.
+> 2. **Hämta mallen till mappen du redan står i, om det går.** Då räcker det att designern startar en ny chatt i samma mapp efteråt. Med en undermapp måste hen också byta mapp, och det är lätt att tappa bort sig där.
+>    - **Är mappen tom** (`ls -A` visar inget, eller bara `.DS_Store` eller `.claude`): hämta in i den med `.` som mål: `git clone https://github.com/emarkensten/sj-design-code-template.git .`. Mallen är publik, så ingen inloggning behövs. En egen kopia på GitHub kan kopplas senare, när designern vill dela.
+>    - **Är mappen inte tom** (till exempel hemmappen): hämta inte in där. Föreslå att designern skapar en tom mapp, till exempel `Dokument/min-prototyp`, öppnar den i Claude-appen eller VS Code och klistrar in länken igen. Vill hen hellre fortsätta här: klona till en undermapp och säg tydligt att nästa chatt ska startas i just den mappen.
+>    - Vill designern ha en egen kopia på GitHub direkt och är inloggad (`gh auth status --hostname github.com`): `GH_HOST=github.com gh repo create <namn> --template emarkensten/sj-design-code-template --private`, och klona sedan den nya adressen på samma sätt som ovan.
 >    - Använd full github.com-adress. Din inbyggda GitHub-koppling och `gh` kan vara inställda på SJ:s GitHub Enterprise, och då hittar de inte mallen.
 >    - Kopiera inte filerna till en mapp utan git.
 > 3. **Kör `npm run setup`** i mappen.
-> 4. **Stanna och be designern starta om dig i den nya mappen.** Först då laddas SJ:s MCP-servrar och designskillen. Ge designern exakta steg och ett färdigt meddelande att klistra in efter omstarten (se "Obligatoriskt stopp" i `AGENTS.md`). Bygg ingenting före omstarten.
+> 4. **Stanna och be designern starta en ny chatt i mallens mapp** (samma mapp om du hämtade in i den). Först då laddas SJ:s MCP-servrar och designskillen. Ge designern exakta steg och ett färdigt meddelande att klistra in efter omstarten (se "Obligatoriskt stopp" i `AGENTS.md`). Bygg ingenting före omstarten.
 > 5. **Läs `AGENTS.md` och följ den** från och med nu. Den går före dina allmänna arbetsflöden och skills (till exempel brainstorming eller writing-plans).
 
 En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s designsystem**, tillsammans med en kodagent (Claude Code eller GitHub Copilot).
@@ -34,6 +35,10 @@ En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s desi
 Codespaces är gratis upp till en viss mängd användning per månad på ett privat GitHub-konto.
 
 ### På din egen dator
+
+Enklast med en kodagent: skapa en **tom mapp** (till exempel `Dokument/min-prototyp`), öppna den i Claude-appen eller i VS Code och klistra in länken till den här sidan. Agenten hämtar mallen till mappen och installerar allt. Sedan startar du en ny chatt i samma mapp.
+
+Har du redan mallen: kör
 
 ```bash
 npm run setup

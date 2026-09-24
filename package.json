@@ -14,7 +14,8 @@
     "sj:update": "node scripts/sj-update.mjs",
     "sj:add": "node scripts/sj-add.mjs",
     "sj:list": "node scripts/sj-add.mjs --list",
-    "skills": "node scripts/setup-skills.mjs"
+    "skills": "node scripts/setup-skills.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -67,6 +68,7 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
+    "playwright": "^1.63.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.0"
   }
