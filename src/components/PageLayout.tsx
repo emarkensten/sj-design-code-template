@@ -1,6 +1,6 @@
 import { useRef, type ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box } from "@mui/material";
+import { Box, GlobalStyles } from "@mui/material";
 import AppBar from "@sj-ab/component-library.ui.app-bar";
 import Typography from "@sj-ab/component-library.ui.typography";
 import Stack from "@sj-ab/component-library.ui.stack";
@@ -57,6 +57,11 @@ export function PageLayout({ title, intro, back, maxWidth = 600, bottomBar, chil
           {children}
         </Stack>
       </Box>
+      {bottomBar && (
+        // BottomBarContainer ligger fast i nederkant. Det som skrollas fram eller får
+        // tangentbordsfokus ska hamna ovanför den, inte bakom den.
+        <GlobalStyles styles={(theme) => ({ html: { scrollPaddingBottom: theme.spacing(16) } })} />
+      )}
       {bottomBar}
     </>
   );

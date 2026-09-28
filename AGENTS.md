@@ -14,6 +14,10 @@ Du jobbar med en **designer på SJ** som bygger klickbara prototyper i kod med S
 - **Skriva svenska** till designern om inget annat sägs. Kod, variabelnamn och commit-meddelanden skrivs på engelska. Texter i gränssnittet skrivs på svenska.
 - **Tipsa om det designern inte vet finns**, men högst ett tips i taget och bara när det passar (se "Plugins och skills att föreslå").
 
+## Modell
+
+Använd den starkaste modellen du har för nya vyer och flöden. Den ger märkbart bättre UX och UI. En mindre modell räcker för små, väl avgränsade ändringar och sparar kvot. Detaljer för Claude Code står i `CLAUDE.md`.
+
 ## Checklista i början av varje session
 
 Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par sekunder, säg vad du gör.
@@ -261,7 +265,7 @@ Ett vanligt fel. Komponenter med en inre klickyta hamnar indragna i förhålland
 
 **Klicka dig igenom varje interaktion** (knappar, kort, lager som öppnas och stängs, formulär) i webbläsaren innan du säger att något är klart. Kan du inte styra en webbläsare i sessionen: säg det rakt ut, och be designern klicka igenom de konkreta sakerna du listar.
 
-**Skärmdumpar som filer** (att visa designern, eller om du saknar ett webbläsarverktyg): `npm run screenshots` klickar sig igenom ett flöde och sparar en bild per steg i `screenshots/`. Ett steg som börjar med `/` är en adress, allt annat är texten på en knapp eller länk. Chromium laddas ner första gången. Installera inga Python-paket.
+**Skärmdumpar som filer** (att visa designern, eller om du saknar ett webbläsarverktyg): `npm run screenshots` klickar sig igenom ett flöde och sparar en bild per steg i `screenshots/`. Ett steg som börjar med `/` är en adress, allt annat är texten på något att klicka på: en knapp, länk, radioknapp, kryssruta eller flik. Chromium laddas ner första gången. Installera inga Python-paket.
 
 ```bash
 npm run screenshots -- / "Mina resor" "Visa resa" --desktop --dark

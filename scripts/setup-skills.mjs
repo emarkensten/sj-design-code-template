@@ -6,6 +6,7 @@
 //   npm run skills
 
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
 
 const npx = "npx";
 const shell = process.platform === "win32";
@@ -26,6 +27,9 @@ const SKILLS = [
 // Skillen är publik. Ta bort GitHub-inställningar som kan peka fel eller vara ogiltiga.
 const { GH_HOST: _host, GH_ENTERPRISE_TOKEN: _entToken, GH_TOKEN: _token, GITHUB_TOKEN: _ghToken, ...withoutGhHost } = process.env;
 
+// Fanns skillen redan är den laddad i en session som startades här, och då behövs ingen omstart.
+const hadSkill = existsSync(".claude/skills/impeccable") || existsSync(".agents/skills/impeccable");
+
 let failed = 0;
 for (const skill of SKILLS) {
   console.log(`\nInstallerar ${skill.label}`);
@@ -39,6 +43,8 @@ for (const skill of SKILLS) {
 
 if (failed > 0) {
   console.warn(`\n${failed} skill(s) kunde inte installeras. Kör \`npm run skills\` igen när du är online.`);
+} else if (hadSkill) {
+  console.log("\nSkills klara. Designskillen fanns redan, så en session som startades i den här mappen kan fortsätta utan omstart.");
 } else {
   console.log(
     "\nSkills klara. VIKTIGT: starta om kodagenten i den här mappen (VS Code: File → Open Folder, " +

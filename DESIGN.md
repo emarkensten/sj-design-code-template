@@ -73,7 +73,7 @@ Reskomponenterna används alltid före egna rader för resedata: `DepartureCard`
 
 ### Empty states
 
-`EmptyState`. Följ SJ:s mönster för tomma tillstånd (Sanity: *Tomma tillstånd*): ej inloggad, offline, inget svar från servern, sidan finns inte, ingen behörighet.
+`EmptyState`. Följ SJ:s mönster för tomma tillstånd (Sanity: *Tomma tillstånd*): ej inloggad, offline, inget svar från servern, sidan finns inte, ingen behörighet. Ett tomt val i ett flöde, till exempel en fullbokad dag, ska ha en väg vidare: visa närmaste dag eller avgång med plats.
 
 ## Do's and Don'ts
 
@@ -82,6 +82,10 @@ Reskomponenterna används alltid före egna rader för resedata: `DepartureCard`
 - Använd SJ:s färdiga kort- och reskomponenter där de finns.
 - Öppna detaljer i Sheet eller SideSheet.
 - Skriv som SJ (Sanity: *Tonläge*, *UX-writing*): mänskligt och sympatiskt, i ögonhöjd, varmt och lättsamt men inte babbligt. Du-form, aktiv röst, kort och konkret, inga tankstreck.
+- Visa läget innan användaren trycker. Fullbokade dagar och slutsålda avgångar märks med text ("Fullt", "3 platser kvar"), inte bara med färg.
+- Säg vad som saknas när användaren inte kan gå vidare, med SJ:s valideringstexter ("Välj en avgång"), i stället för en grå huvudknapp utan förklaring.
+- Låt en bekräftelse svara på "vad händer nu?": vad som är bokat, nästa steg och en tydlig avslutning ("Klar").
+- Låt vågräta rader med datum eller chips skrolla i `ScrollableContainer`. Inget får gå utanför sidomarginalen.
 - Kolla mobil och desktop, ljust och mörkt läge.
 
 **Gör inte:**

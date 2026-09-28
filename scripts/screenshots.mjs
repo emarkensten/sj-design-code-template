@@ -5,8 +5,8 @@
 //   npm run screenshots -- / "Mina resor" "Visa resa"
 //   npm run screenshots -- /boka-om "Välj avgång" --desktop --dark
 //
-// Ett steg som börjar med / är en adress. Allt annat är namnet på en knapp eller
-// länk att klicka på (samma text som skärmläsaren läser upp).
+// Ett steg som börjar med / är en adress. Allt annat är namnet på något att klicka på:
+// en knapp, länk, radioknapp, kryssruta eller flik (samma text som skärmläsaren läser upp).
 //
 //   --url <adress>   dev-serverns adress (standard http://localhost:5173)
 //   --desktop        även 1440×900, inte bara mobil 375×812
@@ -56,12 +56,13 @@ const slug = (text) =>
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "") || "start";
 
+// Val av avgång, klass eller datum är ofta radioknappar, flikar eller chips, inte knappar.
+const clickableRoles = ["button", "link", "radio", "tab", "checkbox", "switch", "option", "menuitem"];
+
 async function click(page, name) {
   const candidates = [
-    page.getByRole("button", { name, exact: true }),
-    page.getByRole("link", { name, exact: true }),
-    page.getByRole("button", { name }),
-    page.getByRole("link", { name }),
+    ...clickableRoles.map((role) => page.getByRole(role, { name, exact: true })),
+    ...clickableRoles.map((role) => page.getByRole(role, { name })),
     page.getByText(name, { exact: true }),
   ];
   for (const locator of candidates) {
@@ -70,7 +71,7 @@ async function click(page, name) {
       return;
     }
   }
-  throw new Error(`Hittade ingen knapp eller länk som heter "${name}".`);
+  throw new Error(`Hittade inget att klicka på som heter "${name}".`);
 }
 
 rmSync("screenshots", { recursive: true, force: true });
