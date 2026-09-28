@@ -34,7 +34,7 @@ En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s desi
 curl -fsSL https://raw.githubusercontent.com/emarkensten/sj-design-code-template/main/scripts/bootstrap.sh | bash
 ```
 
-Skriptet installerar Homebrew (om du är administratör), git, Node och GitHub CLI, loggar in dig på GitHub, skapar din prototyp som ett privat repo och installerar SJ:s komponenter. Du skriver ditt datorlösenord en gång och klickar *Authorize* när det behövs. Öppna sedan mappen i Claude-appen. Mer i [docs/kom-igang.md](docs/kom-igang.md).
+Skriptet installerar Homebrew (om du är administratör), git, Node och GitHub CLI, loggar in dig på GitHub, skapar din prototyp som ett privat repo och installerar SJ:s komponenter. Du skriver ditt datorlösenord en gång och klickar *Authorize* när det behövs. Öppna sedan mappen i Claude-appen. Mer i [docs/kom-igang.md](docs/kom-igang.md). Verktygen och inloggningen sköts av det gemensamma skriptet [antrop-setup](https://github.com/antrop-ab/antrop-setup).
 
 ### Med en kodagent
 
@@ -62,7 +62,7 @@ npm run dev
 | `.mcp.json`, `.vscode/mcp.json` | SJ:s Storybook-MCP och design-system-MCP |
 | `.claude/skills/sj-design-system/` | SJ:s konventioner, UX-writing och designprinciper |
 | [DESIGN.md](DESIGN.md) / [PRODUCT.md](PRODUCT.md) | SJ:s visuella regler och prototypens syfte (läses av agenten och av impeccable) |
-| [scripts/bootstrap.sh](scripts/bootstrap.sh) | Sätter upp en ny Mac med ett kommando: Homebrew, git, Node, GitHub och prototypen |
+| [scripts/bootstrap.sh](scripts/bootstrap.sh) | Sätter upp en ny Mac med ett kommando: Homebrew, git, Node, GitHub (via [antrop-setup](https://github.com/antrop-ab/antrop-setup)) och prototypen |
 | [docs/kom-igang.md](docs/kom-igang.md) | Steg för steg från tom dator till delad prototyp |
 
 ## Kommandon
