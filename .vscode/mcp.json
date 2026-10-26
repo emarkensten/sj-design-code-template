@@ -3,11 +3,23 @@
     "sj-design-system": {
       "type": "stdio",
       "command": "npx",
-      "args": ["-y", "@sj-ab/component-library.internal.design-system-mcp@0.1.1", "mcp"]
+      "args": [
+        "-y",
+        "@sj-ab/component-library.internal.design-system-mcp@0.1.2",
+        "mcp"
+      ]
     },
     "sj-storybook": {
       "type": "http",
       "url": "https://main--65536a05e6a2962fb1c551cc.chromatic.com/mcp"
+    },
+    "figma-desktop": {
+      "type": "http",
+      "url": "http://127.0.0.1:3845/mcp"
+    },
+    "mobbin": {
+      "type": "http",
+      "url": "https://api.mobbin.com/mcp"
     }
   }
 }

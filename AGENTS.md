@@ -24,10 +24,10 @@ Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par s
 
 1. **Finns `node_modules/`?** Om inte: kör `node --version` och `git --version` först. Saknas något av dem kan `npm run doctor` inte köras, så gå direkt till "Första gången på en ny dator". Finns båda: kör `npm run doctor`. Rapporterar den `SAKNAS`, gå till "Första gången på en ny dator" nedan. Annars kör du `npm run setup`.
 2. **Är SJ-komponenterna på senaste versionen?** Kör `npm run sj:check`. Kör `npm run sj:update` om något är inaktuellt och berätta kort vad som uppdaterades. Vid en ny major-version (skriptet flaggar det): kör `npm run typecheck` efteråt och fixa det som gått sönder. (I Claude Code körs kollen automatiskt vid start och resultatet syns som `[SJ-mall]`-rader. Du behöver bara agera på dem.)
-3. **Finns designskillen?** Saknas `.claude/skills/impeccable`: kör `npm run skills`.
-4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). Saknas de efter att du klonat mallen i den här sessionen: se "Obligatoriskt stopp" nedan. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp. **I Claude Code** kan servrarna fortfarande ansluta när sessionen startar, och verktygen kan vara *deferred* (de måste laddas med `ToolSearch` innan de kan anropas). Sök därför med `ToolSearch` (till exempel `storybook docs`) innan du drar slutsatsen att de saknas. Sökningen väntar på servrar som ansluter.
+3. **Finns designskillsen?** Saknas `.claude/skills/impeccable` eller `.claude/skills/break-ui`: kör `npm run skills`.
+4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). `figma-desktop` (Figmas app, se "Innan du designar") och `mobbin` är valfria: saknas de, fortsätt utan. Saknas de efter att du klonat mallen i den här sessionen: se "Obligatoriskt stopp" nedan. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp. **I Claude Code** kan servrarna fortfarande ansluta när sessionen startar, och verktygen kan vara *deferred* (de måste laddas med `ToolSearch` innan de kan anropas). Sök därför med `ToolSearch` (till exempel `storybook docs`) innan du drar slutsatsen att de saknas. Sökningen väntar på servrar som ansluter.
 
-**Obligatoriskt stopp efter kloning och setup i samma session.** MCP-servrarna (`sj-storybook`, `sj-design-system`) och skillen impeccable laddas bara när agenten startar i mallens mapp. Har du klonat mallen i den här sessionen, eller saknas de verktygen i din verktygslista: **bygg ingenting än.** Stanna och skriv till designern, ungefär så här:
+**Obligatoriskt stopp efter kloning och setup i samma session.** MCP-servrarna (`sj-storybook`, `sj-design-system`) och designskillsen laddas bara när agenten startar i mallens mapp. Har du klonat mallen i den här sessionen, eller saknas de verktygen i din verktygslista: **bygg ingenting än.** Stanna och skriv till designern, ungefär så här:
 
 > Nu är mallen på plats. För att jag ska kunna fråga SJ:s designsystem om komponenter och riktlinjer behöver jag startas om i den nya mappen. Det tar en halv minut:
 >
@@ -76,13 +76,24 @@ Kör `npm run doctor` efteråt. Skriptet går efter `npm run setup`, så det obl
 
 Fråga alltid, första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det Figma-skisser för det här?"**
 
-- **Ja, det finns Figma:** be om länken (högerklick på framen i Figma, välj *Copy link to selection*). Använd Figma-MCP:n (`get_design_context`, `get_screenshot`, `get_variable_defs`) för att läsa designen. Bygg den med SJ-komponenter, översätt Figma-lager till rätt komponent och inte till handgjorda divar. `find_figma_token_mapping` i `sj-design-system`-MCP:n översätter Figma-variabler till SJ-tokens. Saknar agenten Figma-MCP: föreslå att installera den (se nedan). Är den installerad men kräver inloggning (servern "requires authentication"): du kan inte logga in åt designern. Be hen logga in via kopplingarna i Claude-appen, eller med `/mcp` i en terminal med `claude`, och starta sedan en ny session. Be om en skärmdump av framen så länge.
+- **Ja, det finns Figma:** det finns två vägar till filen. Använd den som svarar:
+  - **Figmas app på datorn** (`figma-desktop`-MCP:n, `http://127.0.0.1:3845/mcp`). Snabbast i en live-session: designern markerar en frame i Figma-appen och skriver "bygg det jag markerat". Verktygen (`get_design_context`, `get_screenshot`, `get_variable_defs`, `get_metadata`) läser då markeringen utan länk. Servern finns bara när Figma-appen är öppen och *Dev Mode MCP server* är påslagen (Figma-menyn → *Preferences* → *Enable Dev Mode MCP Server*). Svarar den inte: be designern slå på det, eller använd länken.
+  - **Figma-pluginen** (Figmas server på nätet). Be om länken (högerklick på framen, *Copy link to selection*) och använd samma verktyg med länkens `fileKey` och `nodeId`.
+
+  Bygg sedan med SJ-komponenter. Översätt Figma-lager till rätt komponent och inte till handgjorda divar:
+  - `get_figma_component_conversions` i `sj-design-system`-MCP:n ger granskade översättningar från Figma-komponenter till SJ:s Bit-paket, med props som heter olika i Figma och React. Kör den innan du väljer komponenter.
+  - `find_figma_token_mapping` översätter Figma-variabler till SJ-tokens. Hårdkoda aldrig värden från Figma-kod.
+  - Koden Figma-MCP:n ger tillbaka är en *referens* (ofta React med Tailwind). Använd den för struktur och innehåll, aldrig rakt av: SJ-mallen har inte Tailwind.
+
+  Kräver Figma-pluginen inloggning (servern "requires authentication"): du kan inte logga in åt designern. Be hen logga in via kopplingarna i Claude-appen, eller med `/mcp` i en terminal med `claude`, och starta sedan en ny session. Be om en skärmdump av framen så länge.
 - **Nej, ingen Figma:** berätta att du tänker använda designskillen **impeccable** och varför. Skriv till exempel: "Det finns ingen skiss, så jag planerar vyn med impeccable först och granskar den när den är byggd. Allt inom SJ:s designsystem." Gör sedan så här:
   1. Kolla att `PRODUCT.md` har *Users* och *Product Purpose* ifyllda för prototypen. Ställ annars högst tre korta frågor till designern (vem, i vilken situation, vad ska hen få gjort) och fyll i dem.
   2. **Före bygget:** arbetsflödet `shape`, för att planera flöde och hierarki.
   3. Bygg med SJ-komponenter enligt reglerna nedan.
   4. **Efter bygget:** arbetsflödena `critique` (UX-granskning) och `audit` (tillgänglighet och responsivitet). Åtgärda det som hittas i en omgång.
   5. Vid behov: `layout` (avstånd och rytm), `distill` (skala bort), `harden` (fel-, tom- och laddlägen) eller `onboard` (första gången, tomma lägen).
+- **Valfritt: referenser från Mobbin i konceptfasen.** Innan du formar ett nytt flöde eller en ny vy utan Figma: erbjud i en mening att hämta hur andra appar löst samma sak. Gör det bara om designern vill, annars går du vidare till `shape`. Mobbin-MCP:n söker i skärmar och flöden från riktiga appar: `search_flows` för flöden i flera steg (bokning, ombokning, betalning, onboarding), `search_screens` för en enskild vy (inställningar, profil, tomt läge) och `search_sections` för delar av webbsidor. Välj `platform` efter hur prototypen används: `ios` för mobil, `web` för desktop. Titta på bilderna, inte bara metadatan. Visa designern 3–5 exempel som länkar (`mobbin_url`) med en mening om vad varje exempel gör bra och vilka mönster du tänker använda. Ta mönster och struktur, aldrig någon annans varumärke, bilder eller texter. Bygget görs alltid med SJ-komponenter. Svarar Mobbin att inloggning krävs: säg det i en mening och fortsätt utan. Vid autonomt bygge: sök själv om flödet är vanligt, en sökning per flöde, och nämn kort vilka exempel du utgick från. **SJ:s riktlinjer i Sanity går före Mobbin.**
+- **Vill designern se varianter först:** tipsa om `/prototype` (Emil Kowalskis skill), som bygger 3–5 tydligt olika varianter av en enskild del (ett kort, ett steg i flödet) med en väljare att bläddra mellan. Alla varianter byggs med SJ-komponenter. För fria visuella skisser innan bygget finns `/design` (Claude Design). Får du en länk till en design därifrån: läs den med Artifact-verktyget och bygg den med SJ-komponenter. Designern måste skriva kommandona själv.
 
 **Så används impeccable här:** skillen läser `DESIGN.md` och `PRODUCT.md` i roten. `DESIGN.md` säger att SJ:s visuella värld är given, så allt är *refinement*, aldrig *redesign*.
 
@@ -280,16 +291,34 @@ Titta på bilderna. Kan du inte styra en webbläsare interaktivt, be designern k
 - Visa ändringar i webbläsaren och kolla både mobil (375×812) och desktop (1440×900).
 - `npm run typecheck` ska gå igenom innan något committas eller delas. Det är mallens enda kvalitetsgrind. Tester behövs inte för prototyper.
 
+## Kodgranskning
+
+Designern läser inte koden, så du granskar den. Kör den inbyggda skillen **`code-review`** och åtgärda fynden (`--fix`):
+
+- efter varje större ändring: en ny vy, ett nytt flöde, ett formulär med validering
+- alltid före `npm run ship` om koden har ändrats sedan förra granskningen
+
+Fråga inte först, inte heller vid ett autonomt bygge. Berätta i en mening med vardagsord vad som hittades och rättades. Fynd som kräver ett beslut av designern tar du upp med hen.
+
+**Stresstesta en klar vy** med skillen `break-ui`: den visar vyn med värsta tänkbara data (långa stationsnamn, tomma listor, "1 resenärer") bakom en växel och rapporterar vad som gick sönder. `web-design-guidelines` granskar mot Vercels gränssnittsregler. Båda kompletterar impeccables `audit`, och SJ:s designsystem går före dem.
+
 ## Spara, publicera och dela
 
 Förklara git för designern med vardagsord: en *commit* är en sparpunkt och en *push* laddar upp till GitHub. Föreslå en commit när något fungerar. Kör aldrig `git push --force` och radera aldrig brancher utan att designern uttryckligen bett om det.
 
-### Dela en prototyp via Vercel (privat GitHub)
+### "Publicera" eller "dela länken": `npm run ship`
 
-1. Repot ligger på designerns **privata github.com-konto** (skapat från mallen, helst som *private*).
-2. Designern loggar in på [vercel.com](https://vercel.com) med sitt GitHub-konto, väljer *Add New → Project*, importerar repot och klickar *Deploy*. Vercel känner igen Vite automatiskt. Inga inställningar behövs, `vercel.json` finns redan.
-3. Varje push till `main` uppdaterar länken. Varje annan branch får en egen förhandsvisningslänk, vilket är bra för att visa varianter.
-4. **Deployment Protection** (Settings → Deployment Protection) styr vem som ser länken.
+När designern säger *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör `npm run ship -- "<vad som ändrats>"`. Skriptet kör typkontrollen, sparar (commit), laddar upp till GitHub (push) och väntar in Vercel. Ge designern länken.
+
+- **Första gången** skapas ett privat repo på designerns github.com-konto och ett projekt på Vercel. En prototyp som klonats direkt från mallen pekar på mallens repo. Skriptet publicerar aldrig dit, utan skapar ett eget.
+- **Är designern inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal och godkänna i webbläsaren (logga in med GitHub).
+- **Varianter:** skapa en branch (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte.
+- **Deployment Protection** (Settings → Deployment Protection på vercel.com) styr vem som ser länken. Vercel känner igen Vite automatiskt och `vercel.json` finns redan.
+- Vill designern hellre göra det själv: logga in på [vercel.com](https://vercel.com) med GitHub, *Add New → Project*, importera repot och *Deploy*.
+
+### Claude i GitHub
+
+Med Claudes GitHub-app kan designern (och kollegor) skriva `@claude` i ett ärende eller en pull request på github.com, till exempel *"@claude byt rubriken på startsidan"*. Claude gör ändringen i en pull request och Vercel ger den en förhandsvisningslänk. Uppsättning en gång per repo: `npm run github:claude` visar vad som saknas. Token skriver designern själv i Terminal, aldrig i chatten. Gäller bara repon på github.com, inte SJ:s GitHub Enterprise.
 
 Varför Vite och inte Next.js: prototyperna är rena klientappar och alla SJ-komponenter körs i klienten. Vite är enklare och funkar lika bra på Vercel. Behövs en serverfunktion (till exempel för att dölja en API-nyckel), lägg en fil i `api/` så blir den en Vercel Function.
 
@@ -315,12 +344,18 @@ Designern vet ofta inte att det här finns. Föreslå det när det passar, kort 
 
 | Vad | När du föreslår det | Claude Code | GitHub Copilot (VS Code) |
 |---|---|---|---|
-| **Figma** (MCP) | Så fort Figma nämns eller en figma.com-länk dyker upp | Förinställd i `.claude/settings.json` (`enabledPlugins`): Claude frågar om installationen när mappen öppnas. Tackade designern nej: `claude plugin install figma@claude-plugins-official` | Lägg till Figmas MCP-server via *MCP: Add Server* (https://mcp.figma.com/mcp) |
+| **Figma** (app + plugin) | Så fort Figma nämns eller en figma.com-länk dyker upp | `figma-desktop` i `.mcp.json` när Figma-appen kör med Dev Mode MCP. Pluginen är förinställd i `.claude/settings.json`. Tackade designern nej: `claude plugin install figma@claude-plugins-official` | `figma-desktop` finns i `.vscode/mcp.json`. Figmas server på nätet via *MCP: Add Server* (https://mcp.figma.com/mcp) |
+| **Mobbin** (MCP) | Konceptfasen av ett nytt flöde, eller "hur brukar andra göra?" | I `.mcp.json`. Kräver inloggning första gången | I `.vscode/mcp.json` |
 | **impeccable** (skill) | Ny vy utan Figma (`shape`), eller en klar vy som ska granskas (`critique`, `audit`) | Installeras av `npm run skills` | Samma |
+| **Emil Kowalskis skills** | `break-ui` ("vad händer med riktig data?"), `/prototype` ("visa några varianter"), `emil-design-eng` och `review-animations` ("gör det mer levande"), `mobile-native` ("känns fel på mobilen") | Installeras av `npm run skills` | Samma |
+| **web-design-guidelines** (skill) | Granskning mot gränssnittsregler | Installeras av `npm run skills` | Samma |
+| **code-review** (inbyggd skill) | Efter varje större ändring och före publicering | Inbyggd | – |
+| **/design** (Claude Design) | Designern vill se flera visuella riktningar innan bygget | Inbyggt kommando | – |
+| **Vercel** | Designern vill dela en länk eller undrar varför en deploy failar | Förinställd. `npm run ship` publicerar | Vercel-appen på github.com räcker |
+| **Context7** | Du är osäker på ett API (React Router, i18next, Vite) | Förinställd | – |
 | **Atlassian** (Jira + Confluence) | Designern nämner ett Jira-ärende, en story eller en Confluence-sida | `claude plugin install atlassian@claude-plugins-official` | Atlassians MCP-server via *MCP: Add Server* |
-| **Vercel** | Designern vill dela en länk eller undrar varför en deploy failar | `claude plugin install vercel@claude-plugins-official` | Vercel-appen på github.com räcker |
 
-Plugins som kräver inloggning (Figma, Atlassian, Vercel) öppnar en webbläsare första gången. Designern loggar in själv. Be aldrig om lösenord eller tokens i chatten.
+Plugins som kräver inloggning (Figma, Mobbin, Atlassian, Vercel) öppnar en webbläsare första gången. Designern loggar in själv. Be aldrig om lösenord eller tokens i chatten.
 
 ## Testperiod: samla problem med mallen
 
@@ -348,9 +383,12 @@ Följ mallen i filen: datum, vad som hände, hur det löstes och ett förslag. H
 | `npm run dev` | Startar prototypen lokalt |
 | `npm run sj:check` / `sj:update` | Visar eller installerar senaste SJ-versionerna |
 | `npm run sj:add -- <namn>` | Installerar en SJ-komponent från Bit |
-| `npm run skills` | Installerar eller uppdaterar designskillen impeccable |
+| `npm run skills` | Installerar eller uppdaterar designskills (impeccable, Emil Kowalskis, web-design-guidelines) |
 | `npm run typecheck` | Kollar att koden hänger ihop |
 | `npm run screenshots -- / "Knapptext"` | Klickar igenom ett flöde och sparar skärmdumpar i `screenshots/` |
+| `npm run ship -- "meddelande"` | Kontrollerar, sparar, laddar upp och publicerar på Vercel. Skriver ut länken |
+| `npm run vercel:link` | Kopplar prototypen till Vercel (görs av `ship` första gången) |
+| `npm run github:claude` | Visar hur Claude i GitHub (`@claude`) sätts upp |
 | `npm run build` | Bygger för publicering (Vercel gör det automatiskt) |
 
 ## Projektstruktur
@@ -367,11 +405,12 @@ src/
   i18n/sv.ts                alla texter i gränssnittet
 DESIGN.md                SJ:s visuella regler (läses av impeccable och av dig)
 PRODUCT.md               vem prototypen är för och varför (fylls i per prototyp)
-scripts/                 hjälpskript (bootstrap för ny Mac, doctor, sj-add, sj-update, skills)
+scripts/                 hjälpskript (bootstrap för ny Mac, doctor, sj-add, sj-update, skills, ship)
 .claude/skills/sj-design-system/  SJ-skillen (incheckad)
-.mcp.json                MCP-servrar för Claude Code
+.mcp.json                MCP-servrar för Claude Code (SJ:s två, Figma-appen, Mobbin)
 .vscode/mcp.json         samma MCP-servrar för Copilot i VS Code
 docs/kom-igang.md        steg-för-steg för en ny dator
+.github/workflows/claude.yml  Claude i GitHub (@claude i ärenden och pull requests)
 feedback-till-mallen.md  problem med mallen under testperioden (se ovan)
 .impeccable/critique/ignore.md  kända falsklarm från SJ:s komponenter
 ```
