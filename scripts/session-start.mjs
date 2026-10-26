@@ -23,8 +23,12 @@ if (!existsSync("node_modules/@sj-ab")) {
   }
 }
 
-if (!existsSync(".claude/skills/impeccable")) {
-  notes.push("Designskillen impeccable saknas: kör `npm run skills`.");
+if (!existsSync(".claude/skills/impeccable") || !existsSync(".claude/skills/break-ui")) {
+  notes.push("Designskills saknas (impeccable eller Emil Kowalskis): kör `npm run skills` och be sedan designern starta en ny chatt i mappen.");
+}
+
+if (!existsSync(".vercel/project.json")) {
+  notes.push("Inte kopplad till Vercel än. Det görs första gången prototypen publiceras (`npm run ship`).");
 }
 
 notes.push("Testperiod: skriv ned allt som krånglar med mallen i feedback-till-mallen.md (se AGENTS.md).");

@@ -5,11 +5,22 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(npx tsc *)",
+      "Bash(npx vercel@latest whoami)",
       "Bash(git status*)",
       "Bash(git diff*)",
       "Bash(git log*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
       "mcp__sj-storybook",
-      "mcp__sj-design-system"
+      "mcp__sj-design-system",
+      "mcp__figma-desktop",
+      "mcp__mobbin__search_screens",
+      "mcp__mobbin__search_flows",
+      "mcp__mobbin__search_sections"
+    ],
+    "deny": [
+      "Read(./.env.local)",
+      "Read(./.env*.local)"
     ]
   },
   "hooks": {
@@ -27,10 +38,14 @@
     ]
   },
   "enabledPlugins": {
-    "figma@claude-plugins-official": true
+    "figma@claude-plugins-official": true,
+    "vercel@claude-plugins-official": true,
+    "context7@claude-plugins-official": true
   },
   "enabledMcpjsonServers": [
     "sj-design-system",
-    "sj-storybook"
+    "sj-storybook",
+    "figma-desktop",
+    "mobbin"
   ]
 }

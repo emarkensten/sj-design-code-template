@@ -20,9 +20,12 @@ En mall för designers som vill bygga klickbara prototyper i kod med **SJ:s desi
 
 - **SJ:s riktiga komponenter** från Bit, alltid på senaste versionen
 - **Agenten känner till designsystemet.** Den kan fråga SJ:s Storybook och designwebb via MCP om props, tillgänglighet och riktlinjer.
-- **Designskillen impeccable** planerar och granskar vyer när det inte finns Figma-skisser. `DESIGN.md` håller den inom SJ:s designsystem.
+- **Figma direkt från appen:** markera en frame i Figma och be agenten bygga den. SJ:s MCP översätter Figma-komponenter och variabler till SJ:s paket och tokens.
+- **Referenser från Mobbin** i konceptfasen: hur andra appar löst samma flöde.
+- **Designskills** planerar, granskar och stresstestar vyer: impeccable, Emil Kowalskis (`break-ui`, `/prototype`) och Vercels gränssnittsregler. `DESIGN.md` håller dem inom SJ:s designsystem.
+- **Kodgranskning** efter varje större ändring, innan något publiceras.
 - **Guidad start** även om du aldrig kodat: agenten hjälper dig installera git, Node och GitHub
-- **Dela med en länk** via Vercel
+- **Dela med en länk:** säg *publicera*, så kör agenten `npm run ship` och ger dig en Vercel-länk
 
 ## Snabbstart
 
@@ -59,7 +62,7 @@ npm run dev
 | [AGENTS.md](AGENTS.md) | Instruktioner för kodagenten (Copilot, Claude och andra) |
 | [CLAUDE.md](CLAUDE.md) | Importerar AGENTS.md plus det som bara gäller Claude Code |
 | [.github/copilot-instructions.md](.github/copilot-instructions.md) | Pekar Copilot till AGENTS.md |
-| `.mcp.json`, `.vscode/mcp.json` | SJ:s Storybook-MCP och design-system-MCP |
+| `.mcp.json`, `.vscode/mcp.json` | SJ:s Storybook-MCP och design-system-MCP, Figma-appens MCP och Mobbin |
 | `.claude/skills/sj-design-system/` | SJ:s konventioner, UX-writing och designprinciper |
 | [DESIGN.md](DESIGN.md) / [PRODUCT.md](PRODUCT.md) | SJ:s visuella regler och prototypens syfte (läses av agenten och av impeccable) |
 | [scripts/bootstrap.sh](scripts/bootstrap.sh) | Sätter upp en ny Mac med ett kommando: Homebrew, git, Node, GitHub (via [antrop-setup](https://github.com/antrop-ab/antrop-setup)) och prototypen |
@@ -74,4 +77,5 @@ npm run dev
 | `npm run dev` | Starta prototypen på localhost:5173 |
 | `npm run sj:add -- departure-card` | Lägg till en SJ-komponent |
 | `npm run sj:update` | Uppdatera alla SJ-komponenter |
-| `npm run skills` | Installera eller uppdatera designskillen impeccable |
+| `npm run skills` | Installera eller uppdatera designskills |
+| `npm run ship -- "meddelande"` | Spara, ladda upp och publicera på Vercel |
