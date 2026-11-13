@@ -35,13 +35,24 @@ export function PageLayout({ title, intro, back, maxWidth = 600, bottomBar, chil
       <AppBar
         title={title}
         headingRef={headingRef}
+        // AppBar suddar innehållet bakom sig med backdrop-filter när sidan skrollats.
+        // Safari på iPhone färgar då statusfältet grått i stället för i sidans färg.
+        sx={{ backdropFilter: "none !important", WebkitBackdropFilter: "none !important" }}
         navigationButtons={
           back ? [{ label: back.label, variant: "back", action: () => navigate(back.to) }] : undefined
         }
       />
       <Box
         component="main"
-        sx={{ maxWidth, mx: "auto", px: 2, pt: 3, pb: bottomBar ? 16 : 6 }}
+        sx={(theme) => ({
+          maxWidth,
+          mx: "auto",
+          px: 2,
+          pt: 3,
+          // Luft nedtill plus hemlinjen på iPhone när appen ligger på hemskärmen
+          // (viewport-fit=cover i index.html gör att sidan går ända ned till kanten).
+          pb: `calc(${theme.spacing(bottomBar ? 16 : 6)} + env(safe-area-inset-bottom, 0px))`,
+        })}
       >
         <Stack useFlexGap spacing={3}>
           <Stack useFlexGap spacing={1}>

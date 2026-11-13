@@ -2,9 +2,33 @@
 <html lang="sv">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- viewport-fit=cover: sidan går ända ut till kanten på iPhone. PageLayout lägger
+         till luft för hemlinjen med env(safe-area-inset-bottom). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#ffffff" />
+    <!-- PLATSHÅLLARE: byt namn och beskrivning här, i og-taggarna och i
+         public/manifest.webmanifest första gången prototypen publiceras. -->
     <title>SJ prototyp</title>
+    <meta name="description" content="En klickbar prototyp byggd med SJ:s designsystem." />
+
+    <!-- Lägg på hemskärmen: ikoner och manifest i public/. Ingen service worker,
+         så att ingen fastnar på en gammal version. -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="SJ prototyp" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+
+    <!-- Förhandsvisning när länken delas i Teams, Slack eller Messenger. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="SJ prototyp" />
+    <meta property="og:description" content="En klickbar prototyp byggd med SJ:s designsystem." />
+    <meta property="og:image" content="/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>

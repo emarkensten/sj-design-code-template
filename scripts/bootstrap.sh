@@ -100,6 +100,17 @@ for brew in /opt/homebrew/bin/brew /usr/local/bin/brew; do
 done
 hash -r
 
+# Claude-appen läser inte ~/.zprofile, så Node i ~/.local/node/bin syns inte för appens
+# skal och MCP-servrar ("npx not found"). ~/.local/bin finns redan i appens PATH, så
+# länka dit. Gäller bara när Node ligger i ~/.local/node (installation utan Homebrew).
+if [ -x "$HOME/.local/node/bin/node" ]; then
+  mkdir -p "$HOME/.local/bin"
+  for tool in node npm npx; do
+    # -e är falskt för en trasig länk, och -f ersätter den.
+    [ -e "$HOME/.local/bin/$tool" ] || ln -sfn "$HOME/.local/node/bin/$tool" "$HOME/.local/bin/$tool"
+  done
+fi
+
 # 5. Prototypen ---------------------------------------------------------------
 
 if [ "$PROJECT" = 0 ]; then

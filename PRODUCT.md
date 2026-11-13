@@ -24,7 +24,7 @@ En del av SJ:s digitala tjänster. Upplevelsen ska kännas som SJ: enkel, pålit
 
 ## Operating Context
 
-Klickbar prototyp för att testa och visa idéer, inte produktion. Exempeldata är påhittad. Ingen riktig backend.
+Klickbar prototyp för att testa och visa idéer, inte produktion. Exempeldata är påhittad. Ingen riktig backend, om inget annat står här (uppdatera raden om prototypen får en databas eller serverfunktioner).
 
 ## Capabilities and Constraints
 

@@ -4,14 +4,14 @@
 //
 //   npm run ship
 //   npm run ship -- "Lägg till betalsidan"      eget meddelande för sparpunkten
-//   npm run ship -- --no-check                  hoppa över typkontrollen
+//   npm run ship -- --no-check                  hoppa över typkontrollen och kontrollen av bygget
 //   npm run ship -- --template                  bara för mallens förvaltare: publicera mallen själv
 //
 // Första gången skapas ett privat repo på ditt github.com-konto och ett
 // projekt på Vercel.
 // Står du på en annan branch än main blir det en förhandsvisning med egen länk.
 
-import { readFileSync } from "node:fs";
+import { copyFileSync, existsSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { TEMPLATE_REPO, cleanGhEnv, exec, linkedProject, repoSlug, run, say, step, vercel } from "./lib/util.mjs";
 
@@ -28,10 +28,23 @@ if (!argv.includes("--no-check")) {
     process.exit(1);
   }
   say("Inga fel.");
+
+  step("Kontrollerar den byggda sidan");
+  if (!exec("node", ["scripts/smoke.mjs"])) {
+    say("\nPublicerar inte: den byggda sidan skulle bli tom eller trasig på Vercel.");
+    process.exit(1);
+  }
 }
 
 // 2. Spara ---------------------------------------------------------------------
 step("Sparar");
+// Mallens README säger åt kodagenter att installera mallen. I en prototyp ska den
+// beskriva prototypen, så byt till stommen första gången (instruktionerna finns i docs/mall.md).
+if (!argv.includes("--template") && existsSync("docs/README-prototyp.md") &&
+    existsSync("README.md") && readFileSync("README.md", "utf8").startsWith("# SJ-prototypmall")) {
+  copyFileSync("docs/README-prototyp.md", "README.md");
+  say("Bytte README mot en stomme för prototypen. Be Claude fylla i den.");
+}
 if (!run("git", ["rev-parse", "--is-inside-work-tree"])) exec("git", ["init", "-q", "-b", "main"]);
 exec("git", ["add", "-A"]);
 const staged = run("git", ["diff", "--cached", "--name-only"]);
@@ -42,7 +55,7 @@ if (staged) {
   say("Inga nya ändringar att spara.");
 }
 const branch = run("git", ["branch", "--show-current"]) || "main";
-const sha = run("git", ["rev-parse", "HEAD"]);
+let sha = run("git", ["rev-parse", "HEAD"]);
 
 // 3. GitHub --------------------------------------------------------------------
 step("Laddar upp till GitHub");
@@ -73,10 +86,35 @@ if (!slug) {
     process.exit(1);
   }
   slug = `${owner}/${name}`;
-} else if (!exec("git", ["push", "-u", "origin", branch])) {
-  say("Uppladdningen misslyckades. Har någon annan pushat? Kör git pull och försök igen.");
-  process.exit(1);
+} else {
+  // Någon annan (en kollega, Claude på webben eller @claude i GitHub) kan ha pushat
+  // sedan sist. Hämta deras ändringar först och lägg våra ovanpå.
+  const remoteHasBranch = run("git", ["ls-remote", "--heads", "origin", branch]);
+  if (remoteHasBranch) {
+    if (!exec("git", ["pull", "--rebase", "--autostash", "-q", "origin", branch])) {
+      run("git", ["rebase", "--abort"]);
+      say("\nDina ändringar krockar med ändringar som någon annan har laddat upp. Inget är förlorat.");
+      say("Be Claude lösa konflikten (git pull --rebase) och kör sedan ship igen.");
+      process.exit(1);
+    }
+    if (!argv.includes("--no-check") && run("git", ["rev-parse", "HEAD"]) !== sha) {
+      say("Hämtade andras ändringar. Kontrollerar koden igen.");
+      if (!exec("npx", ["tsc", "-b", "--noEmit"])) {
+        say("\nKoden har fel efter att andras ändringar hämtats (se ovan). Rätta dem och kör ship igen.");
+        process.exit(1);
+      }
+      if (!exec("node", ["scripts/smoke.mjs"])) {
+        say("\nDen byggda sidan fungerar inte efter att andras ändringar hämtats. Rätta det och kör ship igen.");
+        process.exit(1);
+      }
+    }
+  }
+  if (!exec("git", ["push", "-u", "origin", branch])) {
+    say("Uppladdningen misslyckades (se ovan).");
+    process.exit(1);
+  }
 }
+sha = run("git", ["rev-parse", "HEAD"]);
 say(`https://github.com/${slug}`);
 
 // 4. Vercel --------------------------------------------------------------------

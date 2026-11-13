@@ -2,6 +2,8 @@
 
 > ## Till kodagenten (Copilot, Claude och andra): börja här
 >
+> **Står du redan i en prototyp som byggts från mallen** (mappen har `node_modules/`, eller `src/pages/` har fler sidor än `StartPage.tsx`)? Installera ingenting. Läs `AGENTS.md` och jobba vidare med prototypen.
+>
 > Designern har gett dig länken till en **mall**. Läs inte bara om den, och skriv inga specifikationer eller planer ännu. Gör så här, i den här ordningen:
 >
 > 0. **Kör du i GitHub Codespaces** (miljövariabeln `CODESPACES` är `true`), eller är mallens mapp redan öppen? Då finns allt redan. Hoppa direkt till steg 5.
@@ -67,6 +69,8 @@ npm run dev
 | [DESIGN.md](DESIGN.md) / [PRODUCT.md](PRODUCT.md) | SJ:s visuella regler och prototypens syfte (läses av agenten och av impeccable) |
 | [scripts/bootstrap.sh](scripts/bootstrap.sh) | Sätter upp en ny Mac med ett kommando: Homebrew, git, Node, GitHub (via [antrop-setup](https://github.com/antrop-ab/antrop-setup)) och prototypen |
 | [docs/kom-igang.md](docs/kom-igang.md) | Steg för steg från tom dator till delad prototyp |
+| [docs/backend.md](docs/backend.md) | Databas, serverfunktioner i `api/` och tester när prototypen används på riktigt |
+| [docs/mall.md](docs/mall.md) | Installationsinstruktionerna ovan. I en prototyp ersätts README av [docs/README-prototyp.md](docs/README-prototyp.md) |
 
 ## Kommandon
 
@@ -78,4 +82,5 @@ npm run dev
 | `npm run sj:add -- departure-card` | Lägg till en SJ-komponent |
 | `npm run sj:update` | Uppdatera alla SJ-komponenter |
 | `npm run skills` | Installera eller uppdatera designskills |
-| `npm run ship -- "meddelande"` | Spara, ladda upp och publicera på Vercel |
+| `npm run smoke` | Bygg och kontrollera att den byggda sidan inte är tom |
+| `npm run ship -- "meddelande"` | Kontrollera, spara, ladda upp och publicera på Vercel |

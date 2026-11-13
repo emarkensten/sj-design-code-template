@@ -6,10 +6,12 @@ Lägg påhittad data för prototypen här, en fil per område (t.ex. `departures
 - **Relativt till idag.** Räkna datum och tider från `new Date()` så att prototypen ser aktuell ut. Filtrera inte bort allt som passerat, så att sidan inte blir tom på kvällen. Visa hellre passerade poster som "Avgått".
 - **Håll ihop flöden som ska ske samma dag.** En avgång om en timme med alternativ upp till sex timmar senare hamnar på nästa dygn när någon testar på kvällen. Förankra sådana flöden i en fast tid, till exempel nästa morgon klockan 07.00, när klockan är sen.
 - **Täck in lägena.** Ta med minst ett fel- eller undantagsfall (slutsålt, inställt, försenat) så att designen prövas mot dem.
+- **Flöden och resor i flera steg: ta med alla tre lägena.** Genomförda, pågående och kommande steg. Annars syns inte fel som bara gäller stegen framåt (till exempel en promenadtid eller restid som bara ritas mellan steg som redan är gjorda).
+- **Delat tillstånd:** ge varje post ett sätt att ångras eller tas bort, även av någon annan än den som lade till den, med en bekräftelse först (riktlinjen `destruktiva-val`).
 
 ## Delat tillstånd mellan sidor
 
-När något som görs på en sida ska synas på en annan (en ombokning syns i Mina resor, en vald avgång följer med till betalningen): lägg datan i en Context i `src/data/`. Ingen databas eller annat bibliotek behövs för en prototyp.
+När något som görs på en sida ska synas på en annan (en ombokning syns i Mina resor, en vald avgång följer med till betalningen): lägg datan i en Context i `src/data/`. Ingen databas eller annat bibliotek behövs för en prototyp. Ska flera personer se samma data på olika telefoner behövs en databas: se [docs/backend.md](../../docs/backend.md).
 
 ```tsx
 // src/data/JourneysContext.tsx
