@@ -8,7 +8,7 @@
 // så att det inte blockerar `npm run setup` eller agentens start.
 
 import { execFileSync, spawnSync } from "node:child_process";
-import { readFileSync } from "node:fs";
+import { readFileSync, rmSync } from "node:fs";
 
 const checkOnly = process.argv.includes("--check");
 const npm = "npm";
@@ -50,11 +50,13 @@ const stale = Object.entries(outdated).filter(
 );
 
 if (stale.length === 0) {
-  console.log(`Alla ${sjPackages.length} SJ-paket är på senaste versionen.`);
-  process.exit(0);
+  console.log(`Alla ${sjPackages.length} SJ-paket är på senaste versionen enligt npm outdated.`);
+  // `npm outdated` har missat paket som låg kvar på en gammal major. Vid uppdatering
+  // installeras därför alla ändå (snabbt när inget har ändrats).
+  if (checkOnly) process.exit(0);
 }
 
-console.log(`${stale.length} av ${sjPackages.length} SJ-paket har en nyare version:`);
+if (stale.length) console.log(`${stale.length} av ${sjPackages.length} SJ-paket har en nyare version:`);
 for (const [name, info] of stale) {
   const short = name.replace("@sj-ab/component-library.", "");
   const major =
@@ -67,10 +69,19 @@ if (checkOnly) {
   process.exit(0);
 }
 
-console.log("\nUppdaterar...");
+// Installera ALLA @sj-ab-paket på `latest` i ett svep, inte bara dem som listas ovan.
+// SJ:s paket beror på varandra (tema, styles.utils, komponenter) och `npm outdated`
+// missar ibland några. Uppdateras bara en del kan de hamna på olika major-versioner,
+// och då kraschar komponenterna i webbläsaren fast typkontrollen går igenom.
+console.log("\nUppdaterar alla SJ-paket till senaste versionen...");
 const result = spawnSync(
   npm,
-  ["install", "--no-fund", "--no-audit", ...stale.map(([name]) => `${name}@latest`)],
-  { stdio: "inherit" },
+  ["install", "--no-fund", "--no-audit", ...sjPackages.map((name) => `${name}@latest`)],
+  { stdio: "inherit", shell },
 );
+if (result.status === 0) {
+  // Vite sparar förbyggda beroenden. Gamla versioner där ger fel som bara syns i webbläsaren.
+  rmSync("node_modules/.vite", { recursive: true, force: true });
+  console.log("\nKlart. Starta om `npm run dev` om den är igång.");
+}
 process.exit(result.status ?? 1);
