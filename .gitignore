@@ -18,6 +18,8 @@ dist
 .claude/skills/*
 !.claude/skills/sj-design-system/
 skills-lock.json
+# Kopior för GitHub Copilot (npm run skills). Källan är .claude/skills/.
+.github/skills/
 .claude/settings.local.json
 
 # Beställning som sparas före en omstart (se "Obligatoriskt stopp" i AGENTS.md)

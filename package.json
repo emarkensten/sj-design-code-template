@@ -15,6 +15,7 @@
     "sj:add": "node scripts/sj-add.mjs",
     "sj:list": "node scripts/sj-add.mjs --list",
     "skills": "node scripts/setup-skills.mjs",
+    "skills:sync": "node scripts/skills-sync.mjs",
     "screenshots": "node scripts/screenshots.mjs",
     "smoke": "node scripts/smoke.mjs",
     "verify": "node scripts/verify.mjs",

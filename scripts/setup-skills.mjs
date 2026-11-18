@@ -2,11 +2,14 @@
 // Installerar designskills för kodagenten (Claude Code och GitHub Copilot).
 // Hämtas färska varje gång och checkas inte in (se .gitignore).
 // `sj-design-system` ligger redan incheckad i .claude/skills/.
+// Till sist kopieras alla till .github/skills/, där GitHub Copilot letar
+// (scripts/lib/copilot-skills.mjs).
 //
 //   npm run skills
 
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { copilotSkillsOutOfSync, mirrorSkillsForCopilot } from "./lib/copilot-skills.mjs";
 
 const npx = "npx";
 const shell = process.platform === "win32";
@@ -45,7 +48,9 @@ const { GH_HOST: _host, GH_ENTERPRISE_TOKEN: _entToken, GH_TOKEN: _token, GITHUB
 const hadSkill =
   (existsSync(".claude/skills/impeccable") || existsSync(".agents/skills/impeccable")) &&
   (existsSync(".claude/skills/break-ui") || existsSync(".agents/skills/break-ui")) &&
-  (existsSync(".claude/skills/learn-taste") || existsSync(".agents/skills/learn-taste"));
+  (existsSync(".claude/skills/learn-taste") || existsSync(".agents/skills/learn-taste")) &&
+  // Copilot läser bara .github/skills/. Saknades speglingen behöver Copilot också en omstart.
+  existsSync(".github/skills/sj-design-system");
 
 let failed = 0;
 for (const skill of SKILLS) {
@@ -57,6 +62,11 @@ for (const skill of SKILLS) {
   });
   if (result.status !== 0) failed++;
 }
+
+// Kör även om något misslyckades, så att Copilot får det som finns.
+const outOfSync = copilotSkillsOutOfSync().length;
+const mirrored = mirrorSkillsForCopilot();
+console.log(`\n${mirrored} skills kopierade till .github/skills/ för GitHub Copilot${outOfSync ? ` (${outOfSync} var nya eller ändrade)` : ""}.`);
 
 if (failed > 0) {
   console.warn(`\n${failed} skill(s) kunde inte installeras. Kör \`npm run skills\` igen när du är online.`);

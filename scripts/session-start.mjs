@@ -6,6 +6,7 @@
 
 import { execFileSync } from "node:child_process";
 import { existsSync } from "node:fs";
+import { copilotSkillsOutOfSync } from "./lib/copilot-skills.mjs";
 
 const notes = [];
 
@@ -33,6 +34,17 @@ if (!existsSync("node_modules/@sj-ab")) {
 
 if (!existsSync(".claude/skills/impeccable") || !existsSync(".claude/skills/break-ui") || !existsSync(".claude/skills/learn-taste")) {
   notes.push("Designskills saknas (impeccable eller Emil Kowalskis): kör `npm run skills` och be sedan designern starta en ny chatt i mappen.");
+}
+
+// GitHub Copilot läser bara .github/skills/ (en gitignorerad kopia av .claude/skills/).
+// Copilot kör också den här hooken (den läser .claude/settings.json).
+try {
+  const stale = copilotSkillsOutOfSync();
+  if (stale.length) {
+    notes.push(`Skills för GitHub Copilot är inte i takt med .claude/skills/ (${stale.join(", ")}): kör \`npm run skills:sync\`. Använder du Copilot: starta sedan om chatten.`);
+  }
+} catch {
+  // Hooken får aldrig misslyckas.
 }
 
 if (!existsSync(".vercel/project.json")) {

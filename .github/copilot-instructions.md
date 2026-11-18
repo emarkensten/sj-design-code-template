@@ -9,4 +9,6 @@ All vägledning för det här repot står i [AGENTS.md](../AGENTS.md) i roten. L
 - att fråga efter Figma-skisser innan en ny vy byggs
 - konfidentialitetsreglerna innan något pushas till github.com eller Vercel
 
-MCP-servrarna `sj-storybook` och `sj-design-system` är konfigurerade i `.vscode/mcp.json`. Skills ligger i `.claude/skills/` och `.agents/skills/`. Copilot i VS Code läser båda.
+MCP-servrarna `sj-storybook` och `sj-design-system` är konfigurerade i `.mcp.json` i roten (och i `.vscode/mcp.json` för VS Codes äldre agentläge).
+
+Skills ligger i `.github/skills/`. Mappen är en kopia av `.claude/skills/` som `npm run skills` och `npm run skills:sync` gör. Saknas den, eller säger `npm run doctor` att den är inaktuell: kör `npm run skills:sync` och be designern starta om chatten. Ändra aldrig i `.github/skills/`, ändra i `.claude/skills/` och kör sync. Mer i avsnittet "Claude Code och GitHub Copilot" i AGENTS.md.
