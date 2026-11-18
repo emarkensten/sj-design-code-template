@@ -11,21 +11,24 @@ Font weights:
 
 ## Typography Scale
 
-Use the `Typography` component with these `variant` values:
+Use the `Typography` component with these `variant` values (typography 8.4+). The variant only sets the look; set the heading level with `component`.
 
-| Variant | Size | Weight | Usage |
-|---------|------|--------|-------|
-| `h1` | Responsive (32-48px) | Bold | Page titles |
-| `h1Small` | 32px | Bold | Compact page titles |
-| `h1Medium` | 36px | Bold | Medium page titles |
-| `h1Large` | 48px | Bold | Hero titles |
-| `h2` | 24px | Bold | Section headings |
-| `h3` | 19px | Bold | Subsection headings |
-| `h4` | 16px | Bold | Card headings |
-| `subtitle1` | 16px | Medium | Subtitles |
-| `body1` | 16px | Regular | Body text (default) |
-| `caption` | 14px | Regular | Small text, labels |
-| `overline` | 12px | Bold | Category labels |
+| Variant | Usage |
+|---------|-------|
+| `largeTitleEmphasized` | Page title, with `component="h1"` |
+| `title1Emphasized` | Large section title |
+| `title2Emphasized` | Section heading, with `component="h2"` |
+| `title3Emphasized` | Subsection heading, with `component="h3"` |
+| `headlineRegular` | Short emphasized line |
+| `subtitleRegular` / `subtitleEmphasized` | Subtitles |
+| `bodyRegular` / `bodyEmphasized` | Body text (default) |
+| `subheadlineRegular` | Secondary text |
+| `footnoteRegular` | Small print |
+| `caption1Regular` / `caption2Regular` | Labels, metadata |
+
+`Regular`, `Emphasized` and `Italic` versions exist for most sizes; check the variant list in `node_modules/@sj-ab/component-library.ui.typography/dist/Typography.d.ts`.
+
+Removed as variants (fail the typecheck): `h1`–`h4`, `h1Small`, `h1Medium`, `h1Large`, `body1`, `caption`, `heading*`, `link`, `overline`, `subtitle1`.
 
 ## Color Options
 
@@ -39,10 +42,10 @@ Use the `Typography` component with these `variant` values:
 ## Example
 
 ```tsx
-<Typography variant="h2" color="textPrimary">
+<Typography variant="title2Emphasized" component="h2" color="textPrimary">
   Section Title
 </Typography>
-<Typography variant="body1">
+<Typography variant="bodyRegular">
   Body text content here.
 </Typography>
 ```

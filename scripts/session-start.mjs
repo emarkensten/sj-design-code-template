@@ -9,6 +9,14 @@ import { existsSync } from "node:fs";
 
 const notes = [];
 
+// Beställning som sparades före en omstart (se "Obligatoriskt stopp" i AGENTS.md).
+// Bara en påminnelse för Claude Code: punkt 0 i AGENTS.md checklista gäller alla agenter.
+if (existsSync(".omstart.md")) {
+  notes.push(
+    "Designern har startat om efter installationen. Läs .omstart.md, fortsätt med beställningen där och ta bort filen när du har läst den.",
+  );
+}
+
 if (!existsSync("node_modules/@sj-ab")) {
   notes.push("Beroenden saknas: kör `npm run setup` (eller `npm run doctor` först om det är en ny dator).");
 } else {

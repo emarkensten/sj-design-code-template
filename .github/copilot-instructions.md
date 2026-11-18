@@ -2,7 +2,7 @@
 
 All vägledning för det här repot står i [AGENTS.md](../AGENTS.md) i roten. Läs den först och följ den, särskilt:
 
-- checklistan i början av varje session (`npm run sj:check`, `npm run skills`)
+- checklistan i början av varje session (`npm run sj:check`, `npm run skills`), och att läsa `.omstart.md` först om den finns: där står beställningen designern gav innan hen startade om
 - `DESIGN.md` (SJ:s visuella regler) och `PRODUCT.md` (prototypens syfte)
 - att bara använda SJ:s komponenter från Bit (`@sj-ab/component-library.*`)
 - designprinciperna: innehåll direkt på sidan, kort bara via SJ:s färdiga kortkomponenter

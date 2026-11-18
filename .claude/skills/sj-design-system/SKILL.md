@@ -158,7 +158,7 @@ i18n.use(initReactI18next).init({ fallbackLng: "sv", supportedLngs: ["sv", "en"]
 
 ---
 
-> **Typography variants:** use the current names (`bodyRegular`, `subheadlineRegular`, `caption1Regular`, `title1Emphasized`, `largeTitleEmphasized`, …). `body1`, `caption`, `heading*`, `link`, `overline`, `subtitle1` are deprecated and warn on every render. `h1`–`h4` are fine. The full map is `DEPRECATED_TYPOGRAPHY_VARIANT_REPLACEMENTS` in `node_modules/@sj-ab/component-library.ui.typography/dist/typography.d.ts`.
+> **Typography variants:** use the current names (`bodyRegular`, `subheadlineRegular`, `caption1Regular`, `title1Emphasized`, `largeTitleEmphasized`, …). `body1`, `caption`, `heading*`, `link`, `overline`, `subtitle1` are deprecated and warn on every render. `h1`–`h4` were removed as variants in typography 8.4 and fail the typecheck: set the heading level with `component` instead (`<Typography variant="largeTitleEmphasized" component="h1">`, `title2Emphasized` + `component="h2"`, `title3Emphasized` + `component="h3"`). The removed names are listed in `ExcludedDesignTokenTypographyVariant` in `node_modules/@sj-ab/component-library.ui.typography/dist/Typography.d.ts`.
 
 ## 7. Import Patterns
 
@@ -287,7 +287,7 @@ Read these when you need deeper guidance on a specific topic:
 | Layout and spacing decisions | [references/design-layout.md](references/design-layout.md) — mobile-first, responsive |
 | Error handling patterns | [references/design-help.md](references/design-help.md) — contextual help |
 | Color system and dark mode | [references/colors.md](references/colors.md) — token mapping |
-| Typography scale | [references/typography.md](references/typography.md) — h1–caption, SJ Sans |
+| Typography scale | [references/typography.md](references/typography.md) — largeTitle–caption, SJ Sans |
 | Writing UI text | [references/ux-writing.md](references/ux-writing.md) — tone, voice |
 | Date/price/button text rules | [references/ux-writing-rules.md](references/ux-writing-rules.md) — formatting |
 | SV/EN glossary (~160 terms) | [references/ux-writing-glossary.md](references/ux-writing-glossary.md) |

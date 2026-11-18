@@ -23,22 +23,28 @@ Använd den starkaste modellen du har för nya vyer och flöden. Den ger märkba
 
 Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par sekunder, säg vad du gör.
 
+0. **Finns `.omstart.md` i roten?** Då har designern startat om efter installationen (se "Obligatoriskt stopp" nedan). Läs filen, gör punkterna nedan och fortsätt sedan med beställningen i den, även om designern bara skrivit "fortsätt". Ta bort filen när du har läst den.
 1. **Finns `node_modules/`?** Om inte: kör `node --version` och `git --version` först. Saknas något av dem kan `npm run doctor` inte köras, så följ [docs/ny-dator.md](docs/ny-dator.md) direkt. Finns båda: kör `npm run doctor`. Rapporterar den `SAKNAS`, följ [docs/ny-dator.md](docs/ny-dator.md). Annars kör du `npm run setup`.
 2. **Är SJ-komponenterna på senaste versionen?** Kör `npm run sj:check`. Kör `npm run sj:update` om något är inaktuellt och berätta kort vad som uppdaterades. Skriptet uppdaterar alltid alla SJ-paket samtidigt, eftersom de beror på varandra och kraschar i webbläsaren om de hamnar på olika major-versioner. Vid en ny major-version (skriptet flaggar det): kör `npm run typecheck` och titta på sidan i webbläsaren efteråt. Typkontrollen märker inte allt. (I Claude Code körs kollen automatiskt vid start och resultatet syns som `[SJ-mall]`-rader. Du behöver bara agera på dem.)
 3. **Finns designskillsen?** Saknas `.claude/skills/impeccable` eller `.claude/skills/break-ui`: kör `npm run skills`.
 4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). `figma-desktop` (Figmas app, se "Innan du designar") och `mobbin` är valfria: saknas de, fortsätt utan. Saknas de efter att du klonat mallen i den här sessionen: se "Obligatoriskt stopp" nedan. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp. **I Claude Code** kan servrarna fortfarande ansluta när sessionen startar, och verktygen kan vara *deferred* (de måste laddas med `ToolSearch` innan de kan anropas). Sök därför med `ToolSearch` (till exempel `storybook docs`) innan du drar slutsatsen att de saknas. Sökningen väntar på servrar som ansluter.
 
-**Obligatoriskt stopp efter kloning och setup i samma session.** MCP-servrarna (`sj-storybook`, `sj-design-system`) och designskillsen laddas bara när agenten startar i mallens mapp. Har du klonat mallen i den här sessionen, eller saknas de verktygen i din verktygslista: **bygg ingenting än.** Stanna och skriv till designern, ungefär så här:
+**Obligatoriskt stopp efter kloning och setup i samma session.** MCP-servrarna (`sj-storybook`, `sj-design-system`) och designskillsen laddas bara när agenten startar i en mapp där `.mcp.json` och `.claude/skills/` redan finns. **Bygg ingenting än** om något av det här stämmer:
+
+- `.mcp.json`, `AGENTS.md` eller `.claude/skills/` dök upp under den här sessionen, oavsett hur: du klonade mallen, gjorde `git checkout` av en gren, `git pull`, eller körde `npm run setup` eller `npm run skills` (en mapp med bara `.git` räknas som tom),
+- SJ:s MCP-verktyg saknas i din verktygslista (sök med `ToolSearch` först, se punkt 4),
+- mallens skills (`impeccable`, `break-ui`, `prototype`, `mobile-native` med flera) finns i `.claude/skills/` men inte bland de skills du kan använda.
+
+Att SJ:s MCP-servrar råkar finnas globalt räcker inte: skillsen laddas ändå inte. Spara först designerns beställning i `.omstart.md` i prototypens rot (filen är gitignorerad, och nästa session läser den enligt punkt 0 i checklistan, oavsett agent). Skriv beställningen så fullständigt att nästa chatt kan börja direkt: vad designern bad om, svar på frågor du redan ställt och vad du redan gjort. Stanna sedan och skriv till designern, ungefär så här:
 
 > Nu är mallen på plats. För att jag ska kunna fråga SJ:s designsystem om komponenter och riktlinjer behöver jag startas om i den nya mappen. Det tar en halv minut:
 >
 > - **VS Code:** *File → Open Folder* och välj mappen `<sökväg>`. Godkänn MCP-servrarna om VS Code frågar. Öppna sedan Copilot-chatten igen.
 > - **Claude-appen:** starta en ny chatt och välj mappen `<sökväg>`. (Hämtade jag mallen till mappen vi redan står i är det samma mapp, du behöver inte byta.)
 >
-> Klistra sedan in det här, så fortsätter jag där vi var:
-> *"<designerns ursprungliga beställning, i en mening>. Mallen är installerad och jag har startat om."*
+> Jag har sparat din beställning i mappen. Skriv bara *"fortsätt"* i den nya chatten, så tar jag vid där vi var.
 
-Fyll i sökvägen och beställningen själv, så att designern bara behöver kopiera. Fortsätt utan omstart bara om designern uttryckligen ber om det, och säg då att du bygger utan SJ:s dokumentation och bara har typfilerna att gå på. **I molnet gäller stoppet aldrig** (se nästa avsnitt).
+Fyll i sökvägen själv. Fortsätt utan omstart bara om designern uttryckligen ber om det, och säg då att du bygger utan SJ:s dokumentation och bara har typfilerna att gå på. **I molnet gäller stoppet aldrig** (se nästa avsnitt).
 
 ## Molnsessioner och autonomt arbete
 
@@ -135,7 +141,7 @@ Installera paket med `npm run sj:add` och kör aldrig `npm install <paket>` på 
 - **Rå MUI bara för det SJ inte har:** `Box`, `Container`, `Grid`, `Fade`, `useMediaQuery`, `useTheme`. Ser du `import { Button } from "@mui/material"`: byt till SJ:s paket.
 - **Handrulla så lite som möjligt.** Finns ingen komponent för behovet: berätta det för designern och föreslå den närmaste SJ-komponenten innan du bygger en egen. Bygger du ändå: komponera av SJ-komponenter och kommentera varför.
 - **Styling med `sx`**, spacing med temat (`p: 2` = 16px, 1 enhet = 8px), färger via paletten (`color: "text.primary"`, `bgcolor: "background.default"`, `borderColor: "divider"`). **Aldrig hårdkodade hex-värden, px-storlekar på typsnitt eller egna skuggor.**
-- **Typografi via `Typography` med nuvarande varianter:** `largeTitleEmphasized`, `title1Emphasized`, `title2Emphasized`, `title3Emphasized`, `bodyRegular`, `subheadlineRegular`, `caption1Regular` och så vidare. `h1`–`h4` fungerar. **Använd inte** `body1`, `caption`, `heading1md`–`heading4`, `link`, `overline` eller `subtitle1`. De är utfasade och varnar i konsolen. Hela listan finns i `DEPRECATED_TYPOGRAPHY_VARIANT_REPLACEMENTS` i `node_modules/@sj-ab/component-library.ui.typography/dist/typography.d.ts`.
+- **Typografi via `Typography` med nuvarande varianter:** `largeTitleEmphasized`, `title1Emphasized`, `title2Emphasized`, `title3Emphasized`, `bodyRegular`, `subheadlineRegular`, `caption1Regular` och så vidare. Rubriknivån sätts med `component`, inte med varianten: `<Typography variant="largeTitleEmphasized" component="h1">` och `<Typography variant="title2Emphasized" component="h2">`. **`h1`–`h4` finns inte längre som varianter** (borttagna i typography 8.4) och fäller typkontrollen. Byt `h1` mot `largeTitleEmphasized`, `h2` mot `title2Emphasized` och `h3` mot `title3Emphasized`, alla med `component`. **Använd inte heller** `body1`, `caption`, `heading1md`–`heading4`, `link`, `overline` eller `subtitle1`. Vilka varianter som är borttagna står i `ExcludedDesignTokenTypographyVariant` i `node_modules/@sj-ab/component-library.ui.typography/dist/Typography.d.ts`. (`titleVariant="h2"` på kortkomponenter som `InformationCard` är en annan prop och fungerar fortfarande.)
 - **Ikoner, inte emojis**, i gränssnittet. Hämta dem från `@sj-ab/component-library.ui.icons`.
 - **Texter i `src/i18n/sv.ts`**, lästa med `useTranslation()` och `t("nyckel")`. SJ:s UX-writing: du-form, aktiv röst, kort och konkret, inga tankstreck.
 - **Allt ligger inuti `ThemeProvider`** (`src/theme/ThemeProvider.tsx`). Den sköter ljust och mörkt läge och högkontrast.
@@ -369,7 +375,7 @@ Följ mallen i filen: datum, vad som hände, hur det löstes och ett förslag. H
 |---|---|
 | `bash scripts/bootstrap.sh` | Sätter upp en ny Mac: Homebrew, git, Node, gh, GitHub-inloggning, prototyp (`--no-project` för bara verktygen) |
 | `npm run doctor` | Kollar datorn: git, Node, GitHub-inloggningar, Bit-registret |
-| `npm run setup` | Allt på en gång: doctor, install, uppdatera SJ-paket, skills |
+| `npm run setup` | Allt på en gång: doctor, install (`npm ci`), uppdatera inaktuella SJ-paket, skills och ett bygge som visar om en uppdatering brutit något |
 | `npm run dev` | Startar prototypen lokalt |
 | `npm run sj:check` / `sj:update` | Visar eller installerar senaste SJ-versionerna |
 | `npm run sj:add -- <namn>` | Installerar en SJ-komponent från Bit |

@@ -20,6 +20,9 @@ dist
 skills-lock.json
 .claude/settings.local.json
 
+# Beställning som sparas före en omstart (se "Obligatoriskt stopp" i AGENTS.md)
+.omstart.md
+
 # Loggar
 *.log
 

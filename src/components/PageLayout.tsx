@@ -56,7 +56,7 @@ export function PageLayout({ title, intro, back, maxWidth = 600, bottomBar, chil
       >
         <Stack useFlexGap spacing={3}>
           <Stack useFlexGap spacing={1}>
-            <Typography ref={headingRef} variant="h1">
+            <Typography ref={headingRef} variant="largeTitleEmphasized" component="h1">
               {title}
             </Typography>
             {intro && (
