@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { Readable } from "node:stream";
-import { defineConfig, loadEnv, type Plugin } from "vite";
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { createServer, defineConfig, loadEnv, type Plugin, type ViteDevServer } from "vite";
 import react from "@vitejs/plugin-react";
 
 // Alla installerade SJ-paket. Vite förbereder dem när dev-servern startar, i stället
@@ -12,67 +13,94 @@ const sjPackages = Object.keys(pkg.dependencies ?? {}).filter((name) =>
 );
 
 /**
- * Kör serverfunktioner i `api/` under `npm run dev`, så som Vercel kör dem efter publicering.
- * `api/state.ts` svarar på `/api/state`. Skriv funktionerna med webbstandarden:
+ * Kör serverfunktioner i `api/` under `npm run dev` och `vite preview` (som `npm run smoke` och
+ * `npm run ship` använder), så som Vercel kör dem efter publicering. `api/state.ts` svarar på
+ * `/api/state`. Skriv funktionerna med webbstandarden:
  *
  *   export async function GET(request: Request) { return Response.json({ ok: true }); }
  *
- * Gör ingenting om mappen `api/` saknas. Mer i docs/backend.md.
+ * Skriv relativa importer i `api/` med `.js` (`import { db } from "./_lib/db.js"`). Vercel kör
+ * filerna som ESM och hittar inte en import utan ändelse, fast Vite gör det. `npm run smoke`
+ * stoppar en sådan import. Gör ingenting om mappen `api/` saknas. Mer i docs/backend.md.
  */
 function apiRoutes(): Plugin {
+  type Load = (path: string) => Promise<Record<string, unknown>>;
+  type Logger = { error: (msg: string) => void };
+
+  const middleware = (load: Load, logger: Logger, mode: string) => {
+    let envReported = false;
+    return async (req: IncomingMessage, res: ServerResponse, next: () => void) => {
+      const url = new URL(req.url ?? "/", "http://localhost");
+      const name = url.pathname.match(/^\/api\/([\w-]+)\/?$/)?.[1];
+      // Kollas vid varje anrop, så att en api/-mapp som skapas medan dev-servern kör fungerar direkt.
+      if (!url.pathname.startsWith("/api/") || !existsSync("api")) return next();
+      if (!envReported) {
+        envReported = true;
+        reportEnv(mode);
+      }
+      if (!name || !existsSync(`api/${name}.ts`)) {
+        res.statusCode = 404;
+        return res.end(`Ingen serverfunktion för ${url.pathname} (lägg den i api/<namn>.ts)`);
+      }
+      try {
+        const mod = await load(`/api/${name}.ts`);
+        const method = (req.method ?? "GET").toUpperCase();
+        const fallback = mod.default as { fetch?: unknown } | undefined;
+        const handler = mod[method] ?? fallback?.fetch ?? fallback;
+        if (typeof handler !== "function") {
+          res.statusCode = 405;
+          return res.end(`api/${name}.ts saknar ${method}`);
+        }
+        const hasBody = !["GET", "HEAD"].includes(method);
+        const headers = new Headers();
+        for (const [key, value] of Object.entries(req.headers)) {
+          if (value !== undefined) headers.set(key, Array.isArray(value) ? value.join(", ") : value);
+        }
+        // Node kräver `duplex` när body är en ström.
+        const init = {
+          method,
+          headers,
+          body: hasBody ? (Readable.toWeb(req) as ReadableStream) : undefined,
+          duplex: hasBody ? "half" : undefined,
+        } as RequestInit;
+        const request = new Request(new URL(req.url ?? "/", `http://${req.headers.host}`), init);
+        const response: Response = await handler(request);
+        res.statusCode = response.status;
+        // Kroppen läses avkodad nedan, så längd och komprimering från en vidarebefordrad
+        // fetch() stämmer inte längre.
+        response.headers.forEach((value, key) => {
+          if (!["content-encoding", "content-length", "transfer-encoding"].includes(key)) res.setHeader(key, value);
+        });
+        res.end(Buffer.from(await response.arrayBuffer()));
+      } catch (error) {
+        logger.error(`api/${name}.ts: ${(error as Error).stack ?? error}`);
+        res.statusCode = 500;
+        res.end(`Fel i api/${name}.ts (se terminalen)`);
+      }
+    };
+  };
+
   return {
     name: "sj-api-routes",
-    apply: "serve",
     configureServer(server) {
-      let envReported = false;
-      server.middlewares.use(async (req, res, next) => {
-        const url = new URL(req.url ?? "/", "http://localhost");
-        const name = url.pathname.match(/^\/api\/([\w-]+)\/?$/)?.[1];
-        // Kollas vid varje anrop, så att en api/-mapp som skapas medan dev-servern kör fungerar direkt.
-        if (!url.pathname.startsWith("/api/") || !existsSync("api")) return next();
-        if (!envReported) {
-          envReported = true;
-          reportEnv(server.config.mode);
-        }
-        if (!name || !existsSync(`api/${name}.ts`)) {
-          res.statusCode = 404;
-          return res.end(`Ingen serverfunktion för ${url.pathname} (lägg den i api/<namn>.ts)`);
-        }
-        try {
-          const mod = await server.ssrLoadModule(`/api/${name}.ts`);
-          const method = (req.method ?? "GET").toUpperCase();
-          const handler = mod[method] ?? mod.default?.fetch ?? mod.default;
-          if (typeof handler !== "function") {
-            res.statusCode = 405;
-            return res.end(`api/${name}.ts saknar ${method}`);
-          }
-          const hasBody = !["GET", "HEAD"].includes(method);
-          const headers = new Headers();
-          for (const [key, value] of Object.entries(req.headers)) {
-            if (value !== undefined) headers.set(key, Array.isArray(value) ? value.join(", ") : value);
-          }
-          // Node kräver `duplex` när body är en ström.
-          const init = {
-            method,
-            headers,
-            body: hasBody ? (Readable.toWeb(req) as ReadableStream) : undefined,
-            duplex: hasBody ? "half" : undefined,
-          } as RequestInit;
-          const request = new Request(new URL(req.url ?? "/", `http://${req.headers.host}`), init);
-          const response: Response = await handler(request);
-          res.statusCode = response.status;
-          // Kroppen läses avkodad nedan, så längd och komprimering från en vidarebefordrad
-          // fetch() stämmer inte längre.
-          response.headers.forEach((value, key) => {
-            if (!["content-encoding", "content-length", "transfer-encoding"].includes(key)) res.setHeader(key, value);
-          });
-          res.end(Buffer.from(await response.arrayBuffer()));
-        } catch (error) {
-          server.config.logger.error(`api/${name}.ts: ${(error as Error).stack ?? error}`);
-          res.statusCode = 500;
-          res.end(`Fel i api/${name}.ts (se terminalen)`);
-        }
-      });
+      server.middlewares.use(middleware((path) => server.ssrLoadModule(path), server.config.logger, server.config.mode));
+    },
+    // `vite preview` har ingen modulladdare. En liten Vite-server i middleware-läge laddar
+    // funktionerna, och startas först när något faktiskt anropar /api/.
+    configurePreviewServer(server) {
+      let loader: Promise<ViteDevServer> | undefined;
+      const load: Load = async (path) => {
+        loader ??= createServer({
+          configFile: false,
+          root: server.config.root,
+          logLevel: "error",
+          appType: "custom",
+          server: { middlewareMode: true, hmr: false, ws: false },
+        });
+        return (await loader).ssrLoadModule(path);
+      };
+      server.httpServer?.once("close", () => void loader?.then((s) => s.close()));
+      server.middlewares.use(middleware(load, server.config.logger, server.config.mode));
     },
   };
 }

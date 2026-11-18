@@ -6,7 +6,7 @@ Erfarenheterna här kommer från en prototyp som användes live av en grupp. Det
 
 ## Serverfunktioner i `api/`
 
-En fil i `api/` blir en Vercel Function efter publicering, och `npm run dev` kör samma fil lokalt (pluginen `apiRoutes` i `vite.config.ts`). `api/state.ts` svarar på `/api/state`. Skriv dem med webbstandarden:
+En fil i `api/` blir en Vercel Function efter publicering. `npm run dev`, och förhandsvisningen av bygget som `npm run smoke` och `npm run ship` använder, kör samma fil lokalt (pluginen `apiRoutes` i `vite.config.ts`). `api/state.ts` svarar på `/api/state`. Skriv dem med webbstandarden:
 
 ```ts
 // api/state.ts
@@ -19,6 +19,8 @@ export async function POST(request: Request) {
 }
 ```
 
+- **Skriv relativa importer med `.js`**, även när filen heter `.ts`: `import { db } from "./_lib/db.js"`. Vercel kör `api/` som ESM (`"type": "module"`) och hittar inte en import utan ändelse. Vite gör det, så felet syns annars först efter publicering, som `FUNCTION_INVOCATION_FAILED`. `npm run smoke` stoppar en sådan import, och `npm run ship` anropar varje fil i `api/` med `GET` efter publiceringen och varnar om någon svarar med serverfel.
+- Filer som bara delas mellan funktionerna läggs i `api/_lib/`. Ett namn som börjar med `_` blir ingen egen funktion på Vercel.
 - Nycklar läses från `process.env` och ligger i `.env.local` lokalt och i Vercels inställningar efter publicering. **Lägg dem i Vercel för både Production och Preview**, annars saknar förhandslänkarna för en branch nycklarna.
 - Ge prototypens nycklar egna namn, till exempel `PROTO_ANTHROPIC_API_KEY`. `ANTHROPIC_API_KEY` används av Claude själv i molnet och krockar.
 - Agenten får ofta inte läsa `.env.local`. `npm run env:check` visar vilka variabler som finns utan att visa värdena (`--ping` testar databasen).
@@ -26,7 +28,13 @@ export async function POST(request: Request) {
 
 ## Databas
 
-Neon (Postgres) via Vercel Marketplace: *Storage → Create → Neon* i Vercel-projektet. Då läggs `DATABASE_URL` in i Vercel automatiskt. Hämta den till `.env.local` med `npx vercel env pull .env.local`. Paketet `@neondatabase/serverless` kräver designerns ok, precis som andra paket utanför `@sj-ab`.
+Neon (Postgres) via Vercel Marketplace. Skapa databasen från Vercel, inte i Neon: designerns Neon-organisation sköts ofta av Vercel, och då svarar Neon-MCP:ns `create_project` att organisationen hanteras av Vercel. Gör så här i stället:
+
+```bash
+npx vercel integration add neon --name <prototypens-namn>-db -m region=fra1 -e production --no-env-pull
+```
+
+Det skapar databasen och lägger in `DATABASE_URL` i Vercel, bara för Production (`-e production`), så att förhandslänkar inte når den riktiga databasen. `--no-env-pull` hindrar kommandot från att skriva produktionens adress till `.env.local`, vilket det annars gör. Ska förhandslänkarna också ha en databas: skapa en Neon-branch (se nästa avsnitt) och lägg dess adress som `DATABASE_URL` för Preview med `npx vercel env add DATABASE_URL preview`. Designern kan också klicka *Storage → Create → Neon* i Vercel-projektet. Skapa sedan tabellerna med Neon-MCP:n (`run_sql_transaction`), som fungerar mot projektet efteråt. Lokalt används en testkopia av databasen, inte produktionens adress (se nästa avsnitt). Paketet `@neondatabase/serverless` kräver designerns ok, precis som andra paket utanför `@sj-ab`.
 
 Lägg en kö i `localStorage` och läs om med jämna mellanrum (till exempel var tionde sekund) om prototypen ska tåla dåligt nät. Det räcker för en prototyp. Realtid behövs sällan.
 

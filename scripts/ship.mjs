@@ -12,7 +12,7 @@
 // Står du på en branch som börjar med variant- eller preview- blir det en
 // förhandsvisning med egen länk. Andra brancher laddas upp men byggs inte på Vercel.
 
-import { copyFileSync, existsSync, readFileSync } from "node:fs";
+import { copyFileSync, existsSync, readdirSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
 import { TEMPLATE_REPO, cleanGhEnv, exec, linkedProject, repoSlug, run, say, step, vercel } from "./lib/util.mjs";
 
@@ -138,10 +138,35 @@ if (!url) {
   process.exit(1);
 }
 const alias = branch === "main" ? productionAlias(url) : null;
+const brokenApi = await checkApi(alias ?? url);
 say(`\nKlart! ${branch === "main" ? "Länken att dela" : "Förhandsvisning av branchen"}:\n  ${alias ?? url}`);
 if (alias) say(`(Den här versionen: ${url})`);
+if (brokenApi.length) {
+  say(`\nVARNING: sidan är publicerad, men ${brokenApi.join(", ")} svarar med serverfel.`);
+  say("Be Claude läsa Vercels loggar (Vercel-MCP:n get_runtime_logs, eller npx vercel logs).");
+  process.exit(1);
+}
 
 // ---------------------------------------------------------------------------
+
+/**
+ * Anropar varje serverfunktion i api/ med GET efter publiceringen. Lokalt kör Vite filerna,
+ * på Vercel gör Node det, och fel som bara syns där (till exempel en import som Node inte
+ * hittar) ger 500. Andra svar (400, 401, 405) räknas som att funktionen startade.
+ */
+async function checkApi(base) {
+  if (!existsSync("api")) return [];
+  const names = readdirSync("api").filter((f) => /^[\w-]+\.ts$/.test(f)).map((f) => f.replace(/\.ts$/, ""));
+  const broken = [];
+  for (const name of names) {
+    try {
+      const res = await fetch(`${base}/api/${name}`, { signal: AbortSignal.timeout(20_000) });
+      if (res.status >= 500) broken.push(`api/${name}.ts (${res.status})`);
+    } catch {}
+  }
+  if (names.length && !broken.length) say(`Serverfunktionerna svarar (${names.map((n) => `api/${n}`).join(", ")}).`);
+  return broken;
+}
 
 /** Vercel bygger själv vid push om GitHub-kopplingen finns. Vänta in resultatet. */
 async function waitForGitDeployment() {

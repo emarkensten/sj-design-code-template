@@ -11,7 +11,8 @@
 // `npm run ship` kör den automatiskt.
 
 import { spawn, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import { launchBrowser } from "./lib/browser.mjs";
 import { isWin } from "./lib/util.mjs";
 
@@ -19,6 +20,16 @@ const paths = process.argv.slice(2).filter((a) => a.startsWith("/"));
 if (paths.length === 0) paths.push("/");
 const port = 4317;
 const base = `http://localhost:${port}`;
+
+// Vercel kör api/*.ts som ESM och hittar inte en relativ import utan filändelse, fast Vite
+// (och därmed dev, verify och förhandsvisningen nedan) gör det. Funktionen kraschar då
+// först efter publicering, med FUNCTION_INVOCATION_FAILED.
+const badImports = apiImportsWithoutExtension("api");
+if (badImports.length) {
+  console.log("Serverfunktionerna i api/ fungerar inte på Vercel. Skriv relativa importer med .js:");
+  for (const { file, spec } of badImports) console.log(`  ${file}: "${spec}"  ->  "${spec}.js"`);
+  process.exit(1);
+}
 
 console.log("Bygger...");
 const build = spawnSync("npx", ["vite", "build", "--logLevel", "warn"], { stdio: "inherit", shell: isWin });
@@ -46,8 +57,7 @@ try {
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  // Resurser som inte laddas (404 från /api/ som inte körs i förhandsvisningen, kartbilder,
-  // externa tjänster) räknas inte. Det som stoppar är JavaScript-fel och en tom sida.
+  // Resurser som inte laddas (kartbilder, externa tjänster) räknas inte. Det som stoppar är JavaScript-fel och en tom sida.
   page.on("console", (m) => {
     if (m.type() === "error" && !m.text().startsWith("Failed to load resource")) errors.push(m.text());
   });
@@ -98,4 +108,31 @@ async function waitFor(url) {
     await new Promise((r) => setTimeout(r, 250));
   }
   throw new Error(`förhandsvisningen startade inte på ${url}`);
+}
+
+/** Relativa importer i api/ (och src/ som api/ importerar) som saknar filändelse. */
+function apiImportsWithoutExtension(dir) {
+  if (!existsSync(dir)) return [];
+  const found = [];
+  const seen = new Set();
+  const visit = (file) => {
+    if (seen.has(file) || !existsSync(file)) return;
+    seen.add(file);
+    const code = readFileSync(file, "utf8");
+    for (const [, spec] of code.matchAll(/(?:from\s+|import\s*\(\s*|import\s+)["'](\.{1,2}\/[^"']+)["']/g)) {
+      if (!/\.(m?js|json)$/.test(spec)) found.push({ file, spec });
+      // Följ importen så att även filer utanför api/ (till exempel src/shared) kontrolleras.
+      const target = join(file, "..", spec.replace(/\.m?js$/, ""));
+      for (const ext of [".ts", ".tsx", "/index.ts"]) visit(target + ext);
+    }
+  };
+  const walk = (d) => {
+    for (const entry of readdirSync(d, { withFileTypes: true })) {
+      const path = join(d, entry.name);
+      if (entry.isDirectory()) walk(path);
+      else if (/\.tsx?$/.test(entry.name)) visit(path);
+    }
+  };
+  walk(dir);
+  return found;
 }
