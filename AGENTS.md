@@ -345,6 +345,8 @@ Föreslå alltid alternativet: påhittad exempeldata, en generell beskrivning, e
 
 Mallens README är skriven för att installera mallen. **I en prototyp ska README handla om prototypen**, annars kan nästa agent börja installera i stället för att jobba vidare. `npm run ship` byter ut den automatiskt första gången mot stommen i [docs/README-prototyp.md](docs/README-prototyp.md). Fyll i den med designern: vad prototypen är, länken, vilka vyer som finns (fil per vy), URL-parametrar för testning och kommandon. Mallens instruktioner för kodagenter finns kvar i [docs/mall.md](docs/mall.md).
 
+**Mallens rättningar till en befintlig prototyp:** kör `npm run template:update`. Det fungerar även när prototypen skapades som en kopia utan mallens git-historik. Slå ihop filerna det listar för hand, kör `npm install` om `package.json` ändrats, och sedan `npm run typecheck` och `npm run verify`.
+
 Håll README och `PRODUCT.md` aktuella när prototypen växer (nya vyer, en backend). Beslut som är bra att minnas (varför en lösning valdes bort) kan läggas i `docs/beslut.md`, och idéer för senare i `docs/roadmap.md`.
 
 ## Plugins och skills att föreslå
@@ -397,6 +399,7 @@ Följ mallen i filen: datum, vad som hände, hur det löstes och ett förslag. H
 | `npm run sj:add -- <namn>` | Installerar en SJ-komponent från Bit |
 | `npm run skills` | Installerar eller uppdaterar designskills (impeccable, Emil Kowalskis, web-design-guidelines) och kopierar dem till `.github/skills/` för Copilot |
 | `npm run skills:sync` | Kopierar skills från `.claude/skills/` till `.github/skills/` (snabb, utan nät) |
+| `npm run template:update` | För in mallens senaste rättningar i en prototyp: tar över filer som prototypen inte ändrat och listar resten (`--dry` för att bara titta) |
 | `npm run typecheck` | Kollar att koden hänger ihop |
 | `npm run screenshots -- / "Knapptext"` | Klickar igenom ett flöde och sparar skärmdumpar i `screenshots/` (`--safari` för Safaris motor) |
 | `npm run verify` | Spelar upp kärnflödena i `flows.json` mot dev-servern (`--full` för skarp nivå, `"Namn"` för ett flöde) |
