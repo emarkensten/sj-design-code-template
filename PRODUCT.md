@@ -10,6 +10,10 @@ web
 
 React 19 + Vite + TypeScript. SJ:s komponentbibliotek `@sj-ab/component-library.*` från Bit Cloud (MUI 7 under huven). react-router-dom för sidor, i18next för texter (svenska). Publiceras på Vercel.
 
+## Problem
+
+_Fylls i per prototyp._ Problemet i en mening, ur resenärens synvinkel, och det jobbigaste ögonblicket i dag. Gärna med användarens egna ord. (Till exempel: "När tåget ställs in står jag på perrongen och vet inte om jag hinner med anslutningen.") Kommer beställningen som en lösning, till exempel "visa alla byten i en karta", står problemet bakom här.
+
 ## Users
 
 _Fylls i per prototyp._ Vem använder vyn, i vilken situation och med vilken enhet? (Till exempel: resenär på väg till stationen, i mobilen, med bråttom.)

@@ -84,6 +84,7 @@ Reskomponenterna används alltid före egna rader för resedata: `DepartureCard`
 - Skriv som SJ (Sanity: *Tonläge*, *UX-writing*): mänskligt och sympatiskt, i ögonhöjd, varmt och lättsamt men inte babbligt. Du-form, aktiv röst, kort och konkret, inga tankstreck.
 - Visa läget innan användaren trycker. Fullbokade dagar och slutsålda avgångar märks med text ("Fullt", "3 platser kvar"), inte bara med färg.
 - Säg vad som saknas när användaren inte kan gå vidare, med SJ:s valideringstexter ("Välj en avgång"), i stället för en grå huvudknapp utan förklaring.
+- Förklara filtrerade och tomma resultat: säg vad som är filtrerat och hur man ser allt ("Visar bara direkttåg. Visa alla avgångar"), och vad som kan göras när listan är tom.
 - Låt en bekräftelse svara på "vad händer nu?": vad som är bokat, nästa steg och en tydlig avslutning ("Klar").
 - Låt vågräta rader med datum eller chips skrolla i `ScrollableContainer`. Inget får gå utanför sidomarginalen.
 - Kolla mobil och desktop, ljust och mörkt läge.

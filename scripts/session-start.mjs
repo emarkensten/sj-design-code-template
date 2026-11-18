@@ -23,7 +23,7 @@ if (!existsSync("node_modules/@sj-ab")) {
   }
 }
 
-if (!existsSync(".claude/skills/impeccable") || !existsSync(".claude/skills/break-ui")) {
+if (!existsSync(".claude/skills/impeccable") || !existsSync(".claude/skills/break-ui") || !existsSync(".claude/skills/learn-taste")) {
   notes.push("Designskills saknas (impeccable eller Emil Kowalskis): kör `npm run skills` och be sedan designern starta en ny chatt i mappen.");
 }
 

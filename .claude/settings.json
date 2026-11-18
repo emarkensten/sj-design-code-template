@@ -39,13 +39,13 @@
   },
   "enabledPlugins": {
     "figma@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true,
     "context7@claude-plugins-official": true
   },
   "enabledMcpjsonServers": [
     "sj-design-system",
     "sj-storybook",
     "figma-desktop",
-    "mobbin"
+    "mobbin",
+    "vercel"
   ]
 }
