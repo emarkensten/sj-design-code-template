@@ -26,14 +26,14 @@ Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par s
 0. **Finns `.omstart.md` i roten?** Då har designern startat om efter installationen (se "Obligatoriskt stopp" nedan). Läs filen, gör punkterna nedan och fortsätt sedan med beställningen i den, även om designern bara skrivit "fortsätt". Ta bort filen när du har läst den.
 1. **Finns `node_modules/`?** Om inte: kör `node --version` och `git --version` först. Saknas något av dem kan `npm run doctor` inte köras, så följ [docs/ny-dator.md](docs/ny-dator.md) direkt. Finns båda: kör `npm run doctor`. Rapporterar den `SAKNAS`, följ [docs/ny-dator.md](docs/ny-dator.md). Annars kör du `npm run setup`.
 2. **Är SJ-komponenterna på senaste versionen?** Kör `npm run sj:check`. Kör `npm run sj:update` om något är inaktuellt och berätta kort vad som uppdaterades. Skriptet uppdaterar alltid alla SJ-paket samtidigt, eftersom de beror på varandra och kraschar i webbläsaren om de hamnar på olika major-versioner. Vid en ny major-version (skriptet flaggar det): kör `npm run typecheck` och titta på sidan i webbläsaren efteråt. Typkontrollen märker inte allt. (I Claude Code körs kollen automatiskt vid start och resultatet syns som `[SJ-mall]`-rader. Du behöver bara agera på dem.)
-3. **Finns designskillsen?** Saknas `.claude/skills/impeccable` eller `.claude/skills/break-ui`: kör `npm run skills`.
+3. **Finns designskillsen?** Saknas `.claude/skills/impeccable` eller `.claude/skills/break-ui`: kör `npm run skills`. Saknas bara kopian i `.github/skills/` (den som GitHub Copilot läser): kör `npm run skills:sync`. `npm run doctor` säger vilket.
 4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). `figma-desktop` (Figmas app, se "Innan du designar") och `mobbin` är valfria: saknas de, fortsätt utan. Saknas de efter att du klonat mallen i den här sessionen: se "Obligatoriskt stopp" nedan. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp. **I Claude Code** kan servrarna fortfarande ansluta när sessionen startar, och verktygen kan vara *deferred* (de måste laddas med `ToolSearch` innan de kan anropas). Sök därför med `ToolSearch` (till exempel `storybook docs`) innan du drar slutsatsen att de saknas. Sökningen väntar på servrar som ansluter.
 
 **Obligatoriskt stopp efter kloning och setup i samma session.** MCP-servrarna (`sj-storybook`, `sj-design-system`) och designskillsen laddas bara när agenten startar i en mapp där `.mcp.json` och `.claude/skills/` redan finns. **Bygg ingenting än** om något av det här stämmer:
 
 - `.mcp.json`, `AGENTS.md` eller `.claude/skills/` dök upp under den här sessionen, oavsett hur: du klonade mallen, gjorde `git checkout` av en gren, `git pull`, eller körde `npm run setup` eller `npm run skills` (en mapp med bara `.git` räknas som tom),
 - SJ:s MCP-verktyg saknas i din verktygslista (sök med `ToolSearch` först, se punkt 4),
-- mallens skills (`impeccable`, `break-ui`, `prototype`, `mobile-native` med flera) finns i `.claude/skills/` men inte bland de skills du kan använda.
+- mallens skills (`impeccable`, `break-ui`, `prototype`, `mobile-native` med flera) finns i `.claude/skills/` (Claude) eller `.github/skills/` (Copilot) men inte bland de skills du kan använda.
 
 Att SJ:s MCP-servrar råkar finnas globalt räcker inte: skillsen laddas ändå inte. Spara först designerns beställning i `.omstart.md` i prototypens rot (filen är gitignorerad, och nästa session läser den enligt punkt 0 i checklistan, oavsett agent). Skriv beställningen så fullständigt att nästa chatt kan börja direkt: vad designern bad om, svar på frågor du redan ställt och vad du redan gjort. Stanna sedan och skriv till designern, ungefär så här:
 
@@ -56,6 +56,22 @@ Prototyper byggs också av Claude i molnet (claude.ai/code, Claude på webben), 
 - **Nätet kan vara begränsat.** Når du inte en tjänst (Vercel, en databas, Mobbin): använd tjänstens MCP om den finns, låt designern göra steget i webbläsaren, eller kör det på designerns dator. Skriv ned i `feedback-till-mallen.md` vad som inte gick.
 - **Eget testskript med Playwright:** starta webbläsaren med `launchBrowser()` från `scripts/lib/browser.mjs`, inte med `chromium.launch()`, som kan falla med "Executable doesn't exist" i molnet.
 - **Flera trådar i samma prototyp:** jobbar flera sessioner i samma repo samtidigt, ge varje tråd en egen git worktree från färsk `main` (`git worktree add ../<prototyp>-<uppgift> -b <uppgift> origin/main`, sedan `npm ci`), så att ingen bygger vidare på en annan tråds halvfärdiga filer. En sådan branch byggs inte på Vercel (se "Spara, publicera och dela"): testa lokalt.
+
+## Claude Code och GitHub Copilot
+
+Mallen ska fungera lika bra i båda. GitHub Copilot är SJ:s officiella verktyg, och många designers använder Claude. Så här läser de mallen:
+
+| Del | Claude Code | GitHub Copilot (VS Code) |
+|---|---|---|
+| Instruktioner | `CLAUDE.md`, som importerar `AGENTS.md` | `AGENTS.md` och `.github/copilot-instructions.md` |
+| Skills | `.claude/skills/` | `.github/skills/`, en gitignorerad kopia som `npm run skills` och `npm run skills:sync` gör |
+| MCP-servrar | `.mcp.json` | `.mcp.json`, och `.vscode/mcp.json` i VS Codes äldre agentläge |
+| Start-hook | `.claude/settings.json` | Samma fil (Copilots hooks är i förhandsversion). Punkt 0–3 i checklistan gäller ändå |
+
+- **Allt gemensamt skrivs i `AGENTS.md`**, inte i `CLAUDE.md` eller `copilot-instructions.md`. De två filerna pekar bara hit och lägger till det som är specifikt för respektive agent.
+- **Ändrar du en skill** (till exempel `.claude/skills/sj-design-system`): kör `npm run skills:sync`, annars ser Copilot den gamla versionen. Ändra aldrig i `.github/skills/`.
+- **En ny MCP-server** läggs till i både `.mcp.json` och `.vscode/mcp.json`.
+- Efter en ändring av mallen som rör det här: kör testrundan i [docs/copilot-test.md](docs/copilot-test.md).
 
 ## Ny dator, Codespaces och GitHub
 
@@ -379,7 +395,8 @@ Följ mallen i filen: datum, vad som hände, hur det löstes och ett förslag. H
 | `npm run dev` | Startar prototypen lokalt |
 | `npm run sj:check` / `sj:update` | Visar eller installerar senaste SJ-versionerna |
 | `npm run sj:add -- <namn>` | Installerar en SJ-komponent från Bit |
-| `npm run skills` | Installerar eller uppdaterar designskills (impeccable, Emil Kowalskis, web-design-guidelines) |
+| `npm run skills` | Installerar eller uppdaterar designskills (impeccable, Emil Kowalskis, web-design-guidelines) och kopierar dem till `.github/skills/` för Copilot |
+| `npm run skills:sync` | Kopierar skills från `.claude/skills/` till `.github/skills/` (snabb, utan nät) |
 | `npm run typecheck` | Kollar att koden hänger ihop |
 | `npm run screenshots -- / "Knapptext"` | Klickar igenom ett flöde och sparar skärmdumpar i `screenshots/` (`--safari` för Safaris motor) |
 | `npm run verify` | Spelar upp kärnflödena i `flows.json` mot dev-servern (`--full` för skarp nivå, `"Namn"` för ett flöde) |
@@ -410,7 +427,8 @@ PRODUCT.md               vem prototypen är för och varför (fylls i per protot
 flows.json               prototypens kärnflöden, som npm run verify spelar upp
 scripts/                 hjälpskript (bootstrap för ny Mac, doctor, sj-add, sj-update, skills, verify, ship)
 scripts/lib/             gemensamt: flow.mjs (stegspråket), browser.mjs (starta webbläsaren lokalt och i molnet)
-.claude/skills/sj-design-system/  SJ-skillen (incheckad)
+.claude/skills/sj-design-system/  SJ-skillen (incheckad, källan för både Claude och Copilot)
+.github/skills/          kopia av skillsen för GitHub Copilot (genereras, gitignorerad)
 .mcp.json                MCP-servrar för Claude Code (SJ:s två, Figma-appen, Mobbin, Vercel)
 .vscode/mcp.json         samma MCP-servrar för Copilot i VS Code
 docs/kom-igang.md        steg-för-steg för en ny dator
@@ -422,6 +440,7 @@ docs/underlag.md         Figma, impeccable, Mobbin och varianter i detalj (till 
 docs/publicera.md        ship, första publiceringen och Claude i GitHub i detalj (till kodagenten)
 docs/ios-safari.md       Safari på iPhone: kommandon, Safaris MCP-server och fällor
 docs/kontroller.md       kontroller som en ändring utlöser
+docs/copilot-test.md     testrunda för att se att mallen fungerar i GitHub Copilot
 vercel.json              Vite-routing och spärren som bara bygger main, variant-* och preview-*
 .github/workflows/claude.yml  Claude i GitHub (@claude i ärenden och pull requests)
 feedback-till-mallen.md  problem med mallen under testperioden (se ovan)

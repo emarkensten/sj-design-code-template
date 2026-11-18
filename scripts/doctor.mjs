@@ -10,6 +10,7 @@
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { createRequire } from "node:module";
+import { copilotSkillsOutOfSync } from "./lib/copilot-skills.mjs";
 
 const isWin = process.platform === "win32";
 // --pre-install: körs av `npm run setup` före `npm install`, så trasiga beroenden stoppar inte.
@@ -131,6 +132,11 @@ checkDependencies();
 check("Designskill impeccable installerad", existsSync(".claude/skills/impeccable"), undefined, {
   required: false,
   fix: "npm run skills",
+});
+const copilotStale = copilotSkillsOutOfSync();
+check("Skills kopierade för GitHub Copilot (.github/skills)", copilotStale.length === 0, copilotStale.length ? `saknas eller inaktuella: ${copilotStale.join(", ")}` : undefined, {
+  required: false,
+  fix: "npm run skills:sync, och starta om Copilot-chatten",
 });
 
 // Valfria verktyg
