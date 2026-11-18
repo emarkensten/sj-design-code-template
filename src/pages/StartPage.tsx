@@ -32,12 +32,14 @@ export function StartPage() {
       <InformationCard
         variant="information"
         title={t("start.infoTitle")}
-        titleVariant="h2"
+        titleVariant="h3"
         secondaryMeta={t("start.infoBody")}
       />
 
       <Stack component="form" useFlexGap spacing={2} onSubmit={handleSubmit}>
-        <Typography variant="h2">{t("start.formHeading")}</Typography>
+        <Typography variant="title2Emphasized" component="h2">
+          {t("start.formHeading")}
+        </Typography>
         <TextField
           id="name"
           autoComplete="given-name"

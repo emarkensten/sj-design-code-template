@@ -3,6 +3,9 @@
 //
 //   npm run sj:check   visar vad som är inaktuellt, ändrar inget
 //   npm run sj:update  installerar senaste versionen av alla @sj-ab-paket
+//   --if-stale         (används av `npm run setup`) installerar bara om något är
+//                      inaktuellt, så att en ny prototyp inte börjar med en
+//                      omskriven package-lock.json utan att något uppdaterats
 //
 // Tål att vara offline: då skrivs en varning och skriptet avslutas utan fel,
 // så att det inte blockerar `npm run setup` eller agentens start.
@@ -11,6 +14,7 @@ import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync, rmSync } from "node:fs";
 
 const checkOnly = process.argv.includes("--check");
+const ifStale = process.argv.includes("--if-stale");
 const npm = "npm";
 const shell = process.platform === "win32";
 
@@ -53,7 +57,7 @@ if (stale.length === 0) {
   console.log(`Alla ${sjPackages.length} SJ-paket är på senaste versionen enligt npm outdated.`);
   // `npm outdated` har missat paket som låg kvar på en gammal major. Vid uppdatering
   // installeras därför alla ändå (snabbt när inget har ändrats).
-  if (checkOnly) process.exit(0);
+  if (checkOnly || ifStale) process.exit(0);
 }
 
 if (stale.length) console.log(`${stale.length} av ${sjPackages.length} SJ-paket har en nyare version:`);
@@ -83,5 +87,6 @@ if (result.status === 0) {
   // Vite sparar förbyggda beroenden. Gamla versioner där ger fel som bara syns i webbläsaren.
   rmSync("node_modules/.vite", { recursive: true, force: true });
   console.log("\nKlart. Starta om `npm run dev` om den är igång.");
+  console.log("package.json och package-lock.json är ändrade. Spara dem i en commit (till exempel \"Update SJ packages\").");
 }
 process.exit(result.status ?? 1);

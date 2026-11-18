@@ -25,11 +25,11 @@ Alla färger kommer från temat (`generateThemeOptions` i `@sj-ab/component-libr
 
 ## Typography
 
-SJ Sans via `Typography` från `@sj-ab/component-library.ui.typography`. Använd de nuvarande varianterna: `largeTitleEmphasized`, `title1Emphasized`, `title2Emphasized`, `title3Emphasized`, `subtitleRegular`, `bodyRegular`, `subheadlineRegular`, `caption1Regular` och `h1`–`h4`. De äldre varianterna (`body1`, `caption`, `heading*`, `link`, `overline`, `subtitle1`) är utfasade.
+SJ Sans via `Typography` från `@sj-ab/component-library.ui.typography`. Använd de nuvarande varianterna: `largeTitleEmphasized`, `title1Emphasized`, `title2Emphasized`, `title3Emphasized`, `subtitleRegular`, `bodyRegular`, `subheadlineRegular`, `caption1Regular`. Rubriknivån sätts med `component` (`component="h1"`). `h1`–`h4` finns inte längre som varianter, och de äldre (`body1`, `caption`, `heading*`, `link`, `overline`, `subtitle1`) är utfasade.
 
 ### Hierarchy
 
-En `h1` per sida (den som AppBar följer via `headingRef`), `h2` för sektioner och `bodyRegular` för brödtext. Sekundär information skrivs i `color="text.secondary"`, inte i mindre storlek utan skäl.
+En `h1` per sida (`largeTitleEmphasized` med `component="h1"`, den som AppBar följer via `headingRef`), `h2` för sektioner (`title2Emphasized` med `component="h2"`) och `bodyRegular` för brödtext. Sekundär information skrivs i `color="text.secondary"`, inte i mindre storlek utan skäl.
 
 ## Layout
 

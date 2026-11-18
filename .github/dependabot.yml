@@ -1,0 +1,9 @@
+# Håller GitHub-action:erna i .github/workflows uppdaterade. De är låsta till en
+# commit (SHA), så Dependabot öppnar en pull request när en ny version finns.
+# npm-paketen sköts inte här: SJ-paketen uppdateras med `npm run sj:update`.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

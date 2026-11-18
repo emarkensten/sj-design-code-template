@@ -183,7 +183,7 @@ export default function LoginPage() {
   return (
     <Box sx={{ maxWidth: 400, mx: "auto", mt: 8, p: 3 }}>
       <Stack direction="row" justifyContent="space-between" alignItems="center">
-        <Typography variant="h2">Logga in</Typography>
+        <Typography variant="title2Emphasized" component="h2">Logga in</Typography>
         <IconButton
           ariaLabel={theme === "dark" ? "Byt till ljust tema" : "Byt till mörkt tema"}
           onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
