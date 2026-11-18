@@ -1,0 +1,14 @@
+{
+  "$comment": "Prototypens kärnflöden, som npm run verify spelar upp (och npm run smoke och ship på den byggda sidan). Ett flöde per sak en användare ska få gjort. Steg: \"/adress\", \"Knapptext\", \"Etikett=text\", \"vänta:Text\", \"syns:Text\", \"inte:Text\" (se scripts/lib/flow.mjs). Byt ut exemplen mot prototypens egna flöden när startsidan byts ut. \"level\": \"vardag\" eller \"skarp\" (se scripts/verify.mjs).",
+  "level": "vardag",
+  "flows": [
+    {
+      "name": "Startsidan visas",
+      "steps": ["/", "syns:Kom igång", "syns:Byggd med SJ:s designsystem"]
+    },
+    {
+      "name": "Fylla i formuläret",
+      "steps": ["/", "inte:Hej Anna!", "Ditt namn=Anna", "Fortsätt", "syns:Hej Anna!"]
+    }
+  ]
+}

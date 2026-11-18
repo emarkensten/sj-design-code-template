@@ -24,10 +24,10 @@ const SKILLS = [
   },
   {
     // Samma urval som Antrops prototypmall. Rör inte typsnitt och färger, bara omdöme och detaljer.
-    label: "Emil Kowalskis skills: rörelse, mobilkänsla, stresstest (break-ui) och varianter (/prototype)",
+    label: "Emil Kowalskis skills: rörelse (animate), mobilkänsla, stresstest (break-ui), varianter (/prototype) och designrättningar som blir regler (learn-taste)",
     args: [
       "https://github.com/emilkowalski/skills",
-      ...["emil-design-eng", "review-animations", "find-animation-opportunities", "mobile-native", "break-ui", "prototype"].flatMap(
+      ...["emil-design-eng", "review-animations", "find-animation-opportunities", "mobile-native", "break-ui", "prototype", "animate", "learn-taste"].flatMap(
         (name) => ["--skill", name],
       ),
     ],
@@ -44,7 +44,8 @@ const { GH_HOST: _host, GH_ENTERPRISE_TOKEN: _entToken, GH_TOKEN: _token, GITHUB
 // Fanns skillen redan är den laddad i en session som startades här, och då behövs ingen omstart.
 const hadSkill =
   (existsSync(".claude/skills/impeccable") || existsSync(".agents/skills/impeccable")) &&
-  (existsSync(".claude/skills/break-ui") || existsSync(".agents/skills/break-ui"));
+  (existsSync(".claude/skills/break-ui") || existsSync(".agents/skills/break-ui")) &&
+  (existsSync(".claude/skills/learn-taste") || existsSync(".agents/skills/learn-taste"));
 
 let failed = 0;
 for (const skill of SKILLS) {

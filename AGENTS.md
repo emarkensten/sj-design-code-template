@@ -11,6 +11,7 @@ Du jobbar med en **designer på SJ** som bygger klickbara prototyper i kod med S
 - **Leda, inte vänta.** Föreslå nästa steg och fråga om du ska köra det. Förklara vad ett kommando gör med en mening innan du kör det. Använd ingen jargong utan förklaring.
 - **Göra det tekniska själv.** Kör kommandon, installera paket och fixa fel. Be bara designern göra saker som kräver hen: logga in i en webbläsare, godkänna en behörighet eller skriva ett lösenord.
 - **Prata design.** Motivera designval med SJ:s principer (nedan), inte med kod. Visa resultatet i webbläsaren så ofta det går.
+- **Säga emot.** Håll inte med per automatik. Väg varje förslag mot resenärens situation i `PRODUCT.md`: säg vad det löser, vad det kostar användaren och om det finns ett enklare sätt, och bygg sedan det designern väljer. Kommer flera idéer i rad mitt i ett bygge: gör klart det pågående, samla idéerna och föreslå en ordning.
 - **Skriva svenska** till designern om inget annat sägs. Kod, variabelnamn och commit-meddelanden skrivs på engelska. Texter i gränssnittet skrivs på svenska.
 - **Tipsa om det designern inte vet finns**, men högst ett tips i taget och bara när det passar (se "Plugins och skills att föreslå").
 
@@ -22,7 +23,7 @@ Använd den starkaste modellen du har för nya vyer och flöden. Den ger märkba
 
 Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par sekunder, säg vad du gör.
 
-1. **Finns `node_modules/`?** Om inte: kör `node --version` och `git --version` först. Saknas något av dem kan `npm run doctor` inte köras, så gå direkt till "Första gången på en ny dator". Finns båda: kör `npm run doctor`. Rapporterar den `SAKNAS`, gå till "Första gången på en ny dator" nedan. Annars kör du `npm run setup`.
+1. **Finns `node_modules/`?** Om inte: kör `node --version` och `git --version` först. Saknas något av dem kan `npm run doctor` inte köras, så följ [docs/ny-dator.md](docs/ny-dator.md) direkt. Finns båda: kör `npm run doctor`. Rapporterar den `SAKNAS`, följ [docs/ny-dator.md](docs/ny-dator.md). Annars kör du `npm run setup`.
 2. **Är SJ-komponenterna på senaste versionen?** Kör `npm run sj:check`. Kör `npm run sj:update` om något är inaktuellt och berätta kort vad som uppdaterades. Skriptet uppdaterar alltid alla SJ-paket samtidigt, eftersom de beror på varandra och kraschar i webbläsaren om de hamnar på olika major-versioner. Vid en ny major-version (skriptet flaggar det): kör `npm run typecheck` och titta på sidan i webbläsaren efteråt. Typkontrollen märker inte allt. (I Claude Code körs kollen automatiskt vid start och resultatet syns som `[SJ-mall]`-rader. Du behöver bara agera på dem.)
 3. **Finns designskillsen?** Saknas `.claude/skills/impeccable` eller `.claude/skills/break-ui`: kör `npm run skills`.
 4. **Svarar MCP-servrarna?** Du ska ha tillgång till `sj-storybook` och `sj-design-system` (se nedan). `figma-desktop` (Figmas app, se "Innan du designar") och `mobbin` är valfria: saknas de, fortsätt utan. Saknas de efter att du klonat mallen i den här sessionen: se "Obligatoriskt stopp" nedan. Verktygen kan visas under ett annat namn, till exempel `storybook` med `docs-list`, om designern redan har Storybook-MCP:n installerad globalt. Det är samma källa. I VS Code ska hen godkänna servrarna i `.vscode/mcp.json` när frågan dyker upp. **I Claude Code** kan servrarna fortfarande ansluta när sessionen startar, och verktygen kan vara *deferred* (de måste laddas med `ToolSearch` innan de kan anropas). Sök därför med `ToolSearch` (till exempel `storybook docs`) innan du drar slutsatsen att de saknas. Sökningen väntar på servrar som ansluter.
@@ -37,74 +38,45 @@ Gör det här innan du börjar på designerns uppgift. Tar det mer än ett par s
 > Klistra sedan in det här, så fortsätter jag där vi var:
 > *"<designerns ursprungliga beställning, i en mening>. Mallen är installerad och jag har startat om."*
 
-Fyll i sökvägen och beställningen själv, så att designern bara behöver kopiera. Fortsätt utan omstart bara om designern uttryckligen ber om det, och säg då att du bygger utan SJ:s dokumentation och bara har typfilerna att gå på.
+Fyll i sökvägen och beställningen själv, så att designern bara behöver kopiera. Fortsätt utan omstart bara om designern uttryckligen ber om det, och säg då att du bygger utan SJ:s dokumentation och bara har typfilerna att gå på. **I molnet gäller stoppet aldrig** (se nästa avsnitt).
 
-## Om du kör i GitHub Codespaces
+## Molnsessioner och autonomt arbete
 
-Är miljövariabeln `CODESPACES` satt till `true` finns git, Node och GitHub CLI redan, och designern är inloggad. `.devcontainer/devcontainer.json` har också redan kört installation, SJ-uppdatering och skills. Hoppa över installationsstegen nedan.
+Prototyper byggs också av Claude i molnet (claude.ai/code, Claude på webben), med `@claude` i GitHub eller i Codespaces, där designern kan vara borta en stund. I Claude Code är miljövariabeln `CLAUDE_CODE_REMOTE` satt i molnet.
 
-- Prototypen nås via en vidarebefordrad port (5173). Säg åt designern att öppna den från fliken *Ports* om förhandsvisningen inte öppnas av sig själv.
-- En codespace som skapats från mallen är **inte kopplad till något repo** förrän den publiceras. Föreslå tidigt att spara via *Source Control → Commit → Publish Branch → Publish to GitHub private repository*. Annars finns arbetet bara i codespacen.
-- Påminn om att stänga codespacen när designern är klar för dagen. Gratistimmarna är begränsade.
+- **Ingen omstart.** Det obligatoriska stoppet ovan gäller aldrig i molnet, eftersom det inte går att starta om i mappen. Kör `npm run setup` och läs skills som filer (`.agents/skills/<namn>/SKILL.md` och dess `reference/`).
+- **Fråga bara om det som kräver designern.** Har designern bett dig jobba självständigt: gör det som går att ångra och berätta efteråt vad du gjorde och varför. Skriv designbesluten som antaganden överst i rapporten, så att designern kan säga emot innan mer byggs ovanpå.
+- **De här stoppen gäller ändå:** konfidentialitet (se "Konfidentialitet"), att radera data eller projekt, skrivningar till en databas med riktig data och att skicka något utanför teamet.
+- **Nätet kan vara begränsat.** Når du inte en tjänst (Vercel, en databas, Mobbin): använd tjänstens MCP om den finns, låt designern göra steget i webbläsaren, eller kör det på designerns dator. Skriv ned i `feedback-till-mallen.md` vad som inte gick.
+- **Eget testskript med Playwright:** starta webbläsaren med `launchBrowser()` från `scripts/lib/browser.mjs`, inte med `chromium.launch()`, som kan falla med "Executable doesn't exist" i molnet.
+- **Flera trådar i samma prototyp:** jobbar flera sessioner i samma repo samtidigt, ge varje tråd en egen git worktree från färsk `main` (`git worktree add ../<prototyp>-<uppgift> -b <uppgift> origin/main`, sedan `npm ci`), så att ingen bygger vidare på en annan tråds halvfärdiga filer. En sådan branch byggs inte på Vercel (se "Spara, publicera och dela"): testa lokalt.
 
-## Första gången på en ny dator
+## Ny dator, Codespaces och GitHub
 
-**På Mac: använd `scripts/bootstrap.sh`.** Det tar datorn från tom till körbar prototyp. Är designern administratör och kör i Terminal erbjuder det Homebrew först (lösenordet behövs en gång, sedan kan du själv köra `brew install` för till exempel ffmpeg eller en databas i senare projekt). Annars hamnar Node och GitHub CLI i `~/.local` utan lösenord. PATH och `brew shellenv` skrivs till `~/.zprofile`, och skriptet loggar in på GitHub, sätter git-namn och mejl (GitHubs noreply-adress), skapar ett privat repo från mallen, kör `npm run setup` och kopplar valfritt till Vercel. Det kan köras om, klara steg hoppas över. Designern gör bara tre saker: skriver lösenordet för Homebrew eller klickar *Installera* i rutan för utvecklarverktygen, godkänner GitHub i webbläsaren och, om hen vill dela, godkänner Vercel. Verktygen och inloggningen (Homebrew, git, Node, GitHub CLI, GitHub-inloggning) sköts av det gemensamma skriptet [antrop-setup](https://github.com/antrop-ab/antrop-setup), som bootstrap hämtar och kör först. Fel där rättas i antrop-setup, inte här.
-
-- **Enklast för designern:** be hen öppna appen *Terminal* (Cmd+Mellanslag, skriv "Terminal") och klistra in raden nedan. Då fungerar alla frågor och båda inloggningarna.
-
-  ```bash
-  curl -fsSL https://raw.githubusercontent.com/emarkensten/sj-design-code-template/main/scripts/bootstrap.sh | bash
-  ```
-
-- **Kör du det själv** (designern har öppnat en tom mapp i Claude-appen): `curl -fsSL <adressen ovan> | bash -s -- --here --no-vercel`. Kör det i bakgrunden och läs utskriften medan det går. Utan terminal frågar skriptet ingenting. Vid GitHub-inloggningen öppnar det webbläsaren och skriver ut en engångskod (den kopieras också till urklipp). Ge designern koden direkt. Saknas git ber du hen klicka *Installera* i rutan som dyker upp. Homebrew och Vercel kräver ett Terminal-fönster och hoppas över. Vill designern ha dem: be hen köra raden ovan i Terminal (klara steg hoppas över).
-- **Behöver du Homebrew senare och det saknas:** du kan inte installera det själv (sudo). Be designern köra `bash scripts/bootstrap.sh --no-project` i Terminal, eller raden ovan.
-- **Finns mallen redan lokalt:** `bash scripts/bootstrap.sh --no-project` fixar bara verktygen och inloggningen.
-- **Stoppar skriptet:** läs raden efter `Stopp:`. Vanligast är att Xcode finns men licensen inte är godkänd, eller att designern saknar administratörsbehörighet för utvecklarverktygen. Då behövs Self Service eller IT.
-
-Kör `npm run doctor` efteråt. Skriptet går efter `npm run setup`, så det obligatoriska stoppet för omstart (ovan) gäller också här.
-
-**På Windows, eller om skriptet inte går att använda:** följ [docs/kom-igang.md](docs/kom-igang.md) steg för steg tillsammans med designern: git, Node.js LTS, GitHub CLI (`gh auth login --hostname github.com --git-protocol https --web`, sedan `gh auth setup-git`), och sist mallen och `npm run setup`. Kör `npm run doctor` efter varje steg.
-
-**Inget i mallen kräver SJ:s GitHub Enterprise, VPN eller SJ-konto.** Komponenter, MCP-servrar och typsnitt hämtas publikt. De flesta designers har inget GHE-konto, så nämn det inte om designern inte tar upp det själv. Har designern ett och vill läsa teamets repon: se "SJ:s GitHub Enterprise" längre ned.
-
-**Om `gh` säger att inloggningen misslyckats** fast designern loggat in: en ogiltig `GH_TOKEN` eller `GITHUB_TOKEN` i miljön går före den sparade inloggningen. Kör `env -u GH_TOKEN -u GITHUB_TOKEN gh auth status` för att se den riktiga inloggningen, och använd samma prefix på `gh`-kommandon. För att klona mallen behövs ingen inloggning alls.
-
-**Använd alltid full github.com-adress.** Copilots inbyggda GitHub-koppling och `gh` kan vara inställda på SJ:s GitHub Enterprise (till exempel via miljövariabeln `GH_HOST`). Då leder kortformer som `ägare/repo` fel och ger 404 eller inloggningsfel. Skriv `https://github.com/ägare/repo`, eller sätt `GH_HOST=github.com` framför `gh`-kommandon.
+- **Ny dator eller verktyg som saknas:** följ [docs/ny-dator.md](docs/ny-dator.md). På Mac tar `scripts/bootstrap.sh` datorn från tom till körbar prototyp. Designern klistrar in en rad i Terminal. Kör `npm run doctor` efteråt. Det obligatoriska stoppet för omstart gäller också här.
+- **GitHub Codespaces** (`CODESPACES=true`): git, Node och GitHub CLI finns och installationen är redan gjord. Hoppa över installationsstegen. Mer i [docs/ny-dator.md](docs/ny-dator.md).
+- **Inget i mallen kräver SJ:s GitHub Enterprise, VPN eller SJ-konto.** Nämn inte GHE om designern inte tar upp det själv.
+- **Använd alltid full github.com-adress** (`https://github.com/ägare/repo`) eller `GH_HOST=github.com` framför `gh`. Copilot och `gh` kan vara inställda på SJ:s GitHub Enterprise. Säger `gh` att inloggningen misslyckats fast designern loggat in: se [docs/ny-dator.md](docs/ny-dator.md).
 
 ## Innan du designar något: fråga efter Figma
 
-Fråga alltid, första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det Figma-skisser för det här?"**
+Fråga alltid, första gången en ny vy eller ett nytt flöde ska byggas: **"Finns det Figma-skisser för det här?"** Läs sedan [docs/underlag.md](docs/underlag.md), som säger hur du gör i varje fall:
 
-- **Ja, det finns Figma:** det finns två vägar till filen. Använd den som svarar:
-  - **Figmas app på datorn** (`figma-desktop`-MCP:n, `http://127.0.0.1:3845/mcp`). Snabbast i en live-session: designern markerar en frame i Figma-appen och skriver "bygg det jag markerat". Verktygen (`get_design_context`, `get_screenshot`, `get_variable_defs`, `get_metadata`) läser då markeringen utan länk. Servern finns bara när Figma-appen är öppen och *Dev Mode MCP server* är påslagen (Figma-menyn → *Preferences* → *Enable Dev Mode MCP Server*). Svarar den inte: be designern slå på det, eller använd länken.
-  - **Figma-pluginen** (Figmas server på nätet). Be om länken (högerklick på framen, *Copy link to selection*) och använd samma verktyg med länkens `fileKey` och `nodeId`.
+- **Ja, det finns Figma:** läs framen med `figma-desktop` (designern markerar i Figma-appen) eller Figma-pluginen (länk). Översätt lager till SJ-komponenter med `get_figma_component_conversions` och variabler med `find_figma_token_mapping`. Figmas kod är en referens, aldrig något att klistra in: mallen har inte Tailwind.
+- **Nej, ingen Figma:** planera med designskillen **impeccable**. Kolla att `PRODUCT.md` har *Problem*, *Users* och *Product Purpose*, kör `shape` före bygget och `critique` och `audit` efter. Kommer beställningen som en lösning: fråga efter problemet bakom innan konceptet formas. **SJ:s designsystem går alltid före skillens smak.** Kör aldrig `document`, `bolder` eller `colorize`.
+- **Referenser från Mobbin** (valfritt): erbjud i en mening att visa hur andra appar löst samma flöde. SJ:s riktlinjer i Sanity går före Mobbin.
+- **Varianter:** tipsa om `/prototype` (3–5 varianter av en del) eller `/design` (Claude Design). Designern skriver kommandona själv.
+- **Autonomt bygge:** arbetsflödena får kortas, se [docs/underlag.md](docs/underlag.md).
 
-  Bygg sedan med SJ-komponenter. Översätt Figma-lager till rätt komponent och inte till handgjorda divar:
-  - `get_figma_component_conversions` i `sj-design-system`-MCP:n ger granskade översättningar från Figma-komponenter till SJ:s Bit-paket, med props som heter olika i Figma och React. Kör den innan du väljer komponenter.
-  - `find_figma_token_mapping` översätter Figma-variabler till SJ-tokens. Hårdkoda aldrig värden från Figma-kod.
-  - Koden Figma-MCP:n ger tillbaka är en *referens* (ofta React med Tailwind). Använd den för struktur och innehåll, aldrig rakt av: SJ-mallen har inte Tailwind.
+## Visa innan du bygger
 
-  Kräver Figma-pluginen inloggning (servern "requires authentication"): du kan inte logga in åt designern. Be hen logga in via kopplingarna i Claude-appen, eller med `/mcp` i en terminal med `claude`, och starta sedan en ny session. Be om en skärmdump av framen så länge.
-- **Nej, ingen Figma:** berätta att du tänker använda designskillen **impeccable** och varför. Skriv till exempel: "Det finns ingen skiss, så jag planerar vyn med impeccable först och granskar den när den är byggd. Allt inom SJ:s designsystem." Gör sedan så här:
-  1. Kolla att `PRODUCT.md` har *Users* och *Product Purpose* ifyllda för prototypen. Ställ annars högst tre korta frågor till designern (vem, i vilken situation, vad ska hen få gjort) och fyll i dem.
-  2. **Före bygget:** arbetsflödet `shape`, för att planera flöde och hierarki.
-  3. Bygg med SJ-komponenter enligt reglerna nedan.
-  4. **Efter bygget:** arbetsflödena `critique` (UX-granskning) och `audit` (tillgänglighet och responsivitet). Åtgärda det som hittas i en omgång.
-  5. Vid behov: `layout` (avstånd och rytm), `distill` (skala bort), `harden` (fel-, tom- och laddlägen) eller `onboard` (första gången, tomma lägen).
-- **Valfritt: referenser från Mobbin i konceptfasen.** Innan du formar ett nytt flöde eller en ny vy utan Figma: erbjud i en mening att hämta hur andra appar löst samma sak. Gör det bara om designern vill, annars går du vidare till `shape`. Mobbin-MCP:n söker i skärmar och flöden från riktiga appar: `search_flows` för flöden i flera steg (bokning, ombokning, betalning, onboarding), `search_screens` för en enskild vy (inställningar, profil, tomt läge) och `search_sections` för delar av webbsidor. Välj `platform` efter hur prototypen används: `ios` för mobil, `web` för desktop. Titta på bilderna, inte bara metadatan. Visa designern 3–5 exempel som länkar (`mobbin_url`) med en mening om vad varje exempel gör bra och vilka mönster du tänker använda. Ta mönster och struktur, aldrig någon annans varumärke, bilder eller texter. Bygget görs alltid med SJ-komponenter. Svarar Mobbin att inloggning krävs: säg det i en mening och fortsätt utan. Vid autonomt bygge: sök själv om flödet är vanligt, en sökning per flöde, och nämn kort vilka exempel du utgick från. **SJ:s riktlinjer i Sanity går före Mobbin.**
-- **Vill designern se varianter först:** tipsa om `/prototype` (Emil Kowalskis skill), som bygger 3–5 tydligt olika varianter av en enskild del (ett kort, ett steg i flödet) med en väljare att bläddra mellan. Alla varianter byggs med SJ-komponenter. För fria visuella skisser innan bygget finns `/design` (Claude Design). Får du en länk till en design därifrån: läs den med Artifact-verktyget och bygg den med SJ-komponenter. Designern måste skriva kommandona själv.
+Ett **nytt flöde eller ett omtag** visas för designern och får ett ja innan det byggs på riktigt. Små ändringar (en text, en knapp, en rättning) byggs direkt.
 
-**Så används impeccable här:** skillen läser `DESIGN.md` och `PRODUCT.md` i roten. `DESIGN.md` säger att SJ:s visuella värld är given, så allt är *refinement*, aldrig *redesign*.
-
-- **Arbetsflödena är instruktioner, inte terminalkommandon.** `shape`, `critique`, `audit` och de andra finns som filer: läs `.agents/skills/impeccable/reference/<namn>.md` och följ den. Launchern `.agents/skills/impeccable/scripts/impeccable` har bara verktygskommandon. Den användbara här är `detect <fil eller URL>`, som skannar efter vanliga designfel. Kör den gärna efter `critique`.
-- **Vid ett autonomt bygge** (designern har bett dig bygga, granska och åtgärda utan att vänta på hen) får arbetsflödena kortas. AGENTS.md går före skillen:
-  - `shape`: en plan på högst fem punkter och högst en fråga. Bygg sedan direkt, utan att vänta på att planen bekräftas.
-  - `critique`: kör gärna de två granskarna, men avsluta utan de riktade frågorna. Skriv i stället "Frågor hoppades över: designern bad att allt skulle åtgärdas" och åtgärda. Snapshot i `.impeccable/critique/` behövs inte.
-  - Säger skillen att du alltid ska fråga en gång: fråga bara om designern är med i sessionen. Annars välj det rimligaste och berätta vad du valde.
-- **Kända falsklarm** från SJ:s egna komponenter står i `.impeccable/critique/ignore.md`. Lägg till nya där när du hittar dem.
-- `.claude/skills/impeccable` är en länk till `.agents/skills/impeccable`. Det finns bara en kopia, och `npm run skills` uppdaterar den.
-- **Har skillen precis installerats i den här sessionen** laddas den inte förrän agenten startats om. Det hanteras av det obligatoriska stoppet ovan. Har designern valt att fortsätta utan omstart: läs `.agents/skills/impeccable/SKILL.md` och relevant `reference/`-fil direkt. Kör aldrig `impeccable document` eller `bolder` eller `colorize` (de skriver om eller byter den visuella världen) och byt aldrig typsnitt, färger, skuggor eller radier på skillens inrådan. **SJ:s designsystem går alltid före skillens smak.**
+- **Skissen är snabb, inte en spec:** en klickbar version med påhittad data och utan backend, eller 2–3 varianter att välja mellan (`/prototype`). Lägg skärmbilderna i chatten.
+- **Kärnflödet först.** Bygg flödet med påhittad data och visa det klickbart innan databas, inloggning, externa tjänster eller AI kopplas in.
+- **Flera personer i samma flöde** (en som bokar och en som reser, en som delar en resa och andra som tar emot den): föreslå att spela igenom loppet som var och en innan skissen visas, och gör det vid ja. En tabell med en rad per person: varifrån hen kommer (länk i sms, mejl, appen), vad hen vet när sidan öppnas, vad hen gör och ser, och vad som händer sedan. Lägg till minst två sneda fall, till exempel att tåget ställs in eller att någon inte svarar. Tankefel i konceptet hittas här på tio minuter, efter bygget kostar de ett omtag.
+- **Designern är inte alltid användaren.** Påminn om att låta en riktig resenär prova skissen tidigt. Tio minuter räcker.
+- **Vid ett autonomt bygge:** ett helt nytt flöde blir bättre om designern hinner se skissen först. Föreslå det när fullmakten kommer.
 
 ## SJ:s designsystem
 
@@ -282,28 +254,35 @@ Ett vanligt fel. Komponenter med en inre klickyta hamnar indragna i förhålland
 3. Lägg texterna under en egen nyckel i `src/i18n/sv.ts`.
 4. Lägg exempeldata i `src/data/<område>.ts`, enligt `src/data/README.md`: påhittad, relativ till idag och med minst ett undantagsfall.
 5. Länka till sidan, till exempel från startsidan med en `List` och `ListItemButton component={RouterLink}`.
-6. Kör `npm run typecheck` och titta på sidan i mobil och desktop, i ljust och mörkt läge.
+6. Lägg till sidans kärnflöde i `flows.json` (se "Kontroller").
+7. Kör `npm run typecheck` och `npm run verify`, och titta på sidan i mobil och desktop, i ljust och mörkt läge.
 
 ## Titta på resultatet
 
 **Klicka dig igenom varje interaktion** (knappar, kort, lager som öppnas och stängs, formulär) i webbläsaren innan du säger att något är klart. Kan du inte styra en webbläsare i sessionen: säg det rakt ut, och be designern klicka igenom de konkreta sakerna du listar.
 
-**Skärmdumpar som filer** (att visa designern, eller om du saknar ett webbläsarverktyg): `npm run screenshots` klickar sig igenom ett flöde och sparar en bild per steg i `screenshots/`. Ett steg som börjar med `/` är en adress, allt annat är texten på något att klicka på: en knapp, länk, radioknapp, kryssruta eller flik. Chromium laddas ner första gången. Installera inga Python-paket.
-
-```bash
-npm run screenshots -- / "Mina resor" "Visa resa" --desktop --dark
-```
-
-Titta på bilderna. Kan du inte styra en webbläsare interaktivt, be designern klicka igenom det som inte syns på bilderna (formulär, fel).
-
-- `--url http://localhost:5174` om Vite valt en annan port, `--full` för hela sidan.
-- **Med webbläsarverktyg:** leta upp element med `find` eller `read_page` och klicka med `ref` hellre än på koordinater. Sätt fönsterstorleken i början av varje omgång klick, den kan hoppa tillbaka. En ändring i `src/i18n/sv.ts` laddar om hela sidan: gamla `ref` slutar gälla och öppna Sheets stängs.
-
-**På iPhone.** Flera fel syns bara i Safari på iOS: statusfältets färg, tangentbordet som skjuter upp innehållet, hemlinjen och fasta ytor i nederkant. Kör iOS-simulatorn när en vy är tänkt för mobil och sidan är klar att visas. Det går inte att skriva text i simulatorn från agenten, så bygg in **URL-parametrar som öppnar lägen direkt** (till exempel `?sheet=resa-2`, `?steg=betala`, `?tom=1`) och lägg in testdata som exempeldata eller via ett anrop, i stället för att fylla i formulär. Lägg parametrarna i `src/data/` eller i sidans kod och skriv upp dem i README.
-
 - `npm run dev` startar prototypen, normalt på http://localhost:5173. **Läs porten som Vite skriver ut.** Är 5173 upptagen (till exempel av en annan prototyp) väljer Vite nästa lediga, som 5174. Byter du port i webbläsarverktyget: kontrollera att sidans adress verkligen ändrats, eller öppna en ny flik direkt på rätt port.
-- Visa ändringar i webbläsaren och kolla både mobil (375×812) och desktop (1440×900).
-- `npm run typecheck` ska gå igenom innan något committas eller delas. Det är mallens enda kvalitetsgrind. Tester behövs inte för prototyper.
+- Kolla både mobil (375×812) och desktop (1440×900), i ljust och mörkt läge.
+- **Med webbläsarverktyg:** leta upp element med `find` eller `read_page` och klicka med `ref` hellre än på koordinater. Sätt fönsterstorleken i början av varje omgång klick, den kan hoppa tillbaka. En ändring i `src/i18n/sv.ts` laddar om hela sidan: gamla `ref` slutar gälla och öppna Sheets stängs.
+- **Skärmdumpar som filer** (att visa designern, eller om du saknar ett webbläsarverktyg): `npm run screenshots -- / "Mina resor" "Visa resa" --desktop --dark` sparar en bild per steg i `screenshots/`. Stegen är samma som i `flows.json` (nedan). `--safari` tar bilderna i Safaris motor som en iPhone, `--full` hela sidan, `--url` en annan port. Installera inga Python-paket. Titta på bilderna.
+- **Safari på iPhone:** flera fel syns bara där (statusfältet, tangentbordet, hemlinjen, fasta ytor i nederkant). Kommandon, Safaris inbyggda MCP-server och fällorna står i [docs/ios-safari.md](docs/ios-safari.md). Syns ett fel bara i Safari: föreslå att styra Safari på datorn via MCP, så att du kan klicka och läsa konsolen själv.
+
+### Kontroller: vardag och skarp nivå
+
+Inga enhetstester behövs. `npm run verify` klickar sig igenom prototypen som en användare, med Playwright.
+
+- **Flödeskartan `flows.json`** listar kärnflödena, ett per sak användaren ska få gjort, med steg som `"/boka-om"`, `"Välj avgång"`, `"Namn=Anna"` och `"syns:Bokningen är klar"`. Lägg till flödet när du bygger det och ändra det när flödet ändras. **Ändra aldrig ett flöde bara för att kontrollen ska gå igenom:** säg i så fall till designern vad som ändrats i flödet och varför. Byt ut mallens exempelflöden när startsidan byts ut.
+- **Vardag, varje omgång:** `npm run typecheck`, `npm run verify` (kärnflödena i Chromium på mobil, några sekunder per flöde, mot dev-servern), de rader i [docs/kontroller.md](docs/kontroller.md) som ändringen utlöser och klick i webbläsaren på det du ändrat. `verify` räknar också JavaScript-fel, sidor som svarar med fel och sidor som går att skrolla i sidled på mobil.
+- **Skarp nivå** när en omgång ska testas med användare, visas utanför teamet eller när designern ber om hårdare tester: `npm run verify -- --full` (mobil och desktop, ljust och mörkt, Safaris motor som iPhone och iOS-simulatorn om Xcode finns, med en skärmdump av varje steg i `screenshots/verify/`). Låt sedan en underagent som inte har byggt vyerna granska skärmdumparna mot `PRODUCT.md` och svara på var en användare skulle fastna. Föreslå skarp nivå i en mening när det finns skäl och kör den när designern säger ja. Vill designern ha den hela tiden: sätt `"level": "skarp"` i `flows.json`.
+- **Tre försök, sedan stopp.** Fallerar en kontroll fortfarande efter tre rättningar: sluta, och berätta med vardagsord vad som inte fungerar, vad du har provat och vad du föreslår. Lägg inte in väntetider, kör inte om tills den råkar gå igenom och hoppa inte över kontrollen. Kör om bara flödet som fallerade (`npm run verify -- "Flödets namn"`) medan du rättar, och alla en gång på slutet.
+
+### När något är klart
+
+Skriv **klart** bara när `npm run typecheck` och `npm run verify` går igenom, `code-review` är körd, varje klick är prövat i webbläsaren på mobil och desktop, och skärmbilderna ligger i chatten, inte bara i en mapp.
+
+**Börja rapporten med det som inte är kontrollerat**, inte med det som fungerar. `verify` skriver ut raderna *Kontrollerat i* och *INTE kontrollerat*: använd dem. Skriv till exempel *klickat i Chrome, inte kontrollerat i Safari* först, inte i en bisats längre ned. Det designern läser först ska vara det hen behöver kolla själv.
+
+**Tunga kontroller är valbara.** Den skarpa nivån och rollspel för flöden med flera personer kostar tid och kvot. Föreslå dem i en mening när det finns skäl och kör dem när designern säger ja, inte på eget initiativ.
 
 ## Kodgranskning
 
@@ -314,9 +293,8 @@ Designern läser inte koden, så du granskar den. Kör den inbyggda skillen **`c
 
 Före en publicering eller merge granskar du på tre sätt: kod (`code-review`), design (impeccables `critique`) och tillgänglighet (`audit`). Hoppa över en som uppenbart inte berörs (en ändrad text behöver ingen designgranskning) och säg det i en mening.
 
-Fråga inte först, inte heller vid ett autonomt bygge. Berätta i en mening med vardagsord vad som hittades och rättades. Fynd som kräver ett beslut av designern tar du upp med hen.
+Rör ändringen `api/`, en databas, inloggning eller nycklar: kör också den inbyggda skillen **`security-review`**. Fråga inte först, inte heller vid ett autonomt bygge. Berätta i en mening med vardagsord vad som hittades och rättades. Fynd som kräver ett beslut av designern tar du upp med hen.
 
-**Stresstesta en klar vy** med skillen `break-ui`: den visar vyn med värsta tänkbara data (långa stationsnamn, tomma listor, "1 resenärer") bakom en växel och rapporterar vad som gick sönder. `web-design-guidelines` granskar mot Vercels gränssnittsregler. Båda kompletterar impeccables `audit`, och SJ:s designsystem går före dem.
 
 ## Spara, publicera och dela
 
@@ -324,30 +302,11 @@ Förklara git för designern med vardagsord: en *commit* är en sparpunkt och en
 
 ### "Publicera" eller "dela länken": `npm run ship`
 
-När designern säger *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör `npm run ship -- "<vad som ändrats>"`. Skriptet kör typkontrollen, bygger och öppnar den byggda sidan headless (`npm run smoke`) och stoppar om den är tom eller har konsolfel. Sedan sparar det (commit), hämtar andras ändringar (`git pull --rebase`), laddar upp till GitHub (push) och väntar in Vercel. Ge designern länken.
+När designern säger *publicera*, *dela* eller *skicka länken*: granska koden om den ändrats (se "Kodgranskning") och kör `npm run ship -- "<vad som ändrats>"`. Skriptet kör typkontrollen, bygger och öppnar den byggda sidan headless och spelar upp kärnflödena i `flows.json` (`npm run smoke`), och stoppar om något fallerar. Sedan sparar det (commit), hämtar andras ändringar (`git pull --rebase`), laddar upp till GitHub (push) och väntar in Vercel. Ge designern länken. Krockar, första publiceringen, hemskärmen och Claude i GitHub: [docs/publicera.md](docs/publicera.md).
 
-- **Krockar ändringarna** med något en kollega, Claude på webben eller `@claude` laddat upp, stannar skriptet utan att något går förlorat. Lös konflikten, kör `npm run typecheck` och kör `ship` igen.
-- **Första publiceringen:** fyll i namn och beskrivning i `index.html` (`<title>`, `description`, `og:*`, `apple-mobile-web-app-title`) och i `public/manifest.webmanifest`, och sätt `og:image` till den fulla adressen (`https://<länken>/og.png`), annars visar Teams och Slack ingen bild. Byt gärna `public/og.png` mot en skärmdump av prototypen (1200×630). Ersätt också README (se "README och dokument").
-- **Lägga på hemskärmen:** be användarna öppna länken i Safari (iPhone) eller Chrome (Android). I appars inbyggda webbläsare, till exempel Messenger och Teams, går det inte att installera.
-- **Ny version:** den som har prototypen på hemskärmen kan se den gamla versionen tills appen stängts helt. Säg det när du delar en uppdatering med en grupp som redan använder prototypen.
-
-- **Första gången** skapas ett privat repo på designerns github.com-konto och ett projekt på Vercel. En prototyp som klonats direkt från mallen pekar på mallens repo. Skriptet publicerar aldrig dit, utan skapar ett eget.
-- **Är designern inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal och godkänna i webbläsaren (logga in med GitHub).
-- **Varianter:** skapa en branch (`git switch -c variant-b`) och kör `npm run ship`. Den får en egen förhandsvisningslänk och huvudlänken påverkas inte.
-- **När prototypen används på riktigt** (länken är delad och folk använder den): testa ändringar på en branch och dela förhandsvisningslänken innan något hamnar på `main`. Testa aldrig med den riktiga datan. Har prototypen en databas: läs [docs/backend.md](docs/backend.md).
-- **Deployment Protection** (Settings → Deployment Protection på vercel.com) styr vem som ser länken. Vercel känner igen Vite automatiskt och `vercel.json` finns redan.
-- Vill designern hellre göra det själv: logga in på [vercel.com](https://vercel.com) med GitHub, *Add New → Project*, importera repot och *Deploy*.
-
-### Claude i GitHub
-
-Med Claudes GitHub-app kan designern (och kollegor) skriva `@claude` i ett ärende eller en pull request på github.com, till exempel *"@claude byt rubriken på startsidan"*. Claude gör ändringen i en pull request och Vercel ger den en förhandsvisningslänk. Uppsättning en gång per repo: `npm run github:claude` visar vad som saknas. Token skriver designern själv i Terminal, aldrig i chatten. Gäller bara repon på github.com, inte SJ:s GitHub Enterprise.
-
-Varför Vite och inte Next.js: prototyperna är rena klientappar och alla SJ-komponenter körs i klienten. Vite är enklare och funkar lika bra på Vercel. Behövs en serverfunktion (till exempel för att dölja en API-nyckel) eller delat tillstånd mellan telefoner (röster, incheckningar): läs [docs/backend.md](docs/backend.md) först. Där står hur `api/` körs lokalt, vilken databas som passar och hur du undviker att testa mot den riktiga datan.
-
-### SJ:s GitHub Enterprise
-
-- Läs och klona teamens repon med `GH_HOST=<SJ:s GHE-adress> gh repo clone <org>/<repo>` eller `git clone https://<SJ:s GHE-adress>/<org>/<repo>.git`.
-- Prototyper som ska leva hos SJ kan pushas dit i stället för till ett privat konto. Fråga designern vad som gäller för teamet.
+- **Bara vissa brancher byggs.** Vercel bygger `main` (huvudlänken) och brancher som börjar med `variant-` (en variant att jämföra) eller `preview-` (en förhandslänk innan något hamnar på `main`). Andra brancher laddas upp men byggs inte (`scripts/vercel-ignore-build.sh`, ta inte bort spärren): varje bygge lagras och kostar. Testa lokalt tills en omgång är klar och publicera en gång i slutet, inte efter varje ändring.
+- **När prototypen används på riktigt** (länken är delad och folk använder den): ändra på en `preview-`-branch och merga när den är godkänd. Testa aldrig med den riktiga datan. Har prototypen en databas: läs [docs/backend.md](docs/backend.md).
+- **Är designern inte inloggad på Vercel** stannar skriptet. Be hen köra `npx vercel login` i Terminal och godkänna i webbläsaren.
 
 ### Konfidentialitet: viktigt
 
@@ -375,15 +334,18 @@ Designern vet ofta inte att det här finns. Föreslå det när det passar, kort 
 | **Figma** (app + plugin) | Så fort Figma nämns eller en figma.com-länk dyker upp | `figma-desktop` i `.mcp.json` när Figma-appen kör med Dev Mode MCP. Pluginen är förinställd i `.claude/settings.json`. Tackade designern nej: `claude plugin install figma@claude-plugins-official` | `figma-desktop` finns i `.vscode/mcp.json`. Figmas server på nätet via *MCP: Add Server* (https://mcp.figma.com/mcp) |
 | **Mobbin** (MCP) | Konceptfasen av ett nytt flöde, eller "hur brukar andra göra?" | I `.mcp.json`. Kräver inloggning första gången | I `.vscode/mcp.json` |
 | **impeccable** (skill) | Ny vy utan Figma (`shape`), eller en klar vy som ska granskas (`critique`, `audit`) | Installeras av `npm run skills` | Samma |
-| **Emil Kowalskis skills** | `break-ui` ("vad händer med riktig data?"), `/prototype` ("visa några varianter"), `emil-design-eng` och `review-animations` ("gör det mer levande"), `mobile-native` ("känns fel på mobilen") | Installeras av `npm run skills` | Samma |
+| **Emil Kowalskis skills** | `break-ui` ("vad händer med riktig data?"), `/prototype` ("visa några varianter"), `emil-design-eng`, `animate` och `review-animations` ("gör det mer levande", "animera den här"), `mobile-native` ("känns fel på mobilen") | Installeras av `npm run skills` | Samma |
+| **/learn-taste** (Emil Kowalskis skill) | Slutet av en session där designern rättat designen flera gånger: rättningarna blir regler i `DESIGN.md`, så att nästa chatt inte upprepar misstaget. Designern skriver kommandot själv | Installeras av `npm run skills` | – |
 | **web-design-guidelines** (skill) | Granskning mot gränssnittsregler | Installeras av `npm run skills` | Samma |
 | **code-review** (inbyggd skill) | Efter varje större ändring och före publicering | Inbyggd | – |
+| **security-review** (inbyggd skill) | Ändringen rör `api/`, en databas, inloggning eller nycklar | Inbyggd | – |
+| **Safari via MCP** | Ett fel syns bara i Safari, eller ett flöde ska klickas igenom i Safari (se `docs/ios-safari.md`) | `claude mcp add --scope user safari -- /usr/bin/safaridriver --mcp` | *MCP: Add Server* med samma kommando |
 | **/design** (Claude Design) | Designern vill se flera visuella riktningar innan bygget | Inbyggt kommando | – |
-| **Vercel** | Designern vill dela en länk eller undrar varför en deploy failar | Förinställd. `npm run ship` publicerar | Vercel-appen på github.com räcker |
+| **Vercel** (MCP) | Designern vill dela en länk eller undrar varför en deploy failar | `vercel` i `.mcp.json` (Vercels MCP-server, för loggar och deployer). `npm run ship` publicerar. Vercels plugin används inte: det laddar in mycket text i varje session och har skills som pekar bort från mallen (bland annat shadcn) | `vercel` i `.vscode/mcp.json` |
 | **Context7** | Du är osäker på ett API (React Router, i18next, Vite) | Förinställd | – |
 | **Atlassian** (Jira + Confluence) | Designern nämner ett Jira-ärende, en story eller en Confluence-sida | `claude plugin install atlassian@claude-plugins-official` | Atlassians MCP-server via *MCP: Add Server* |
 
-Plugins som kräver inloggning (Figma, Mobbin, Atlassian, Vercel) öppnar en webbläsare första gången. Designern loggar in själv. Be aldrig om lösenord eller tokens i chatten.
+Plugins och MCP-servrar som kräver inloggning (Figma, Mobbin, Atlassian, Vercel) öppnar en webbläsare första gången. Designern loggar in själv. Be aldrig om lösenord eller tokens i chatten.
 
 ## Testperiod: samla problem med mallen
 
@@ -413,8 +375,10 @@ Följ mallen i filen: datum, vad som hände, hur det löstes och ett förslag. H
 | `npm run sj:add -- <namn>` | Installerar en SJ-komponent från Bit |
 | `npm run skills` | Installerar eller uppdaterar designskills (impeccable, Emil Kowalskis, web-design-guidelines) |
 | `npm run typecheck` | Kollar att koden hänger ihop |
-| `npm run screenshots -- / "Knapptext"` | Klickar igenom ett flöde och sparar skärmdumpar i `screenshots/` |
-| `npm run smoke` | Bygger och öppnar den byggda sidan headless. Stoppar vid tom sida eller konsolfel |
+| `npm run screenshots -- / "Knapptext"` | Klickar igenom ett flöde och sparar skärmdumpar i `screenshots/` (`--safari` för Safaris motor) |
+| `npm run verify` | Spelar upp kärnflödena i `flows.json` mot dev-servern (`--full` för skarp nivå, `"Namn"` för ett flöde) |
+| `npm run ios-check -- / /sida` | Öppnar sidorna i riktig Safari i iOS-simulatorn (Xcode), annars WebKit som iPhone |
+| `npm run smoke` | Bygger och öppnar den byggda sidan headless och spelar upp `flows.json`. Stoppar vid tom sida, konsolfel eller ett trasigt flöde |
 | `npm run env:check` | Visar vilka variabler i `.env.local` och miljön som finns, utan att visa värdena |
 | `npm run ship -- "meddelande"` | Kontrollerar koden och den byggda sidan, sparar, hämtar andras ändringar, laddar upp och publicerar på Vercel. Skriver ut länken |
 | `npm run vercel:link` | Kopplar prototypen till Vercel (görs av `ship` första gången) |
@@ -437,14 +401,22 @@ public/                  ikoner, manifest och delningsbild (platshållare, byts 
 index.html               titel, metadata för delning och hemskärm (platshållare)
 DESIGN.md                SJ:s visuella regler (läses av impeccable och av dig)
 PRODUCT.md               vem prototypen är för och varför (fylls i per prototyp)
-scripts/                 hjälpskript (bootstrap för ny Mac, doctor, sj-add, sj-update, skills, ship)
+flows.json               prototypens kärnflöden, som npm run verify spelar upp
+scripts/                 hjälpskript (bootstrap för ny Mac, doctor, sj-add, sj-update, skills, verify, ship)
+scripts/lib/             gemensamt: flow.mjs (stegspråket), browser.mjs (starta webbläsaren lokalt och i molnet)
 .claude/skills/sj-design-system/  SJ-skillen (incheckad)
-.mcp.json                MCP-servrar för Claude Code (SJ:s två, Figma-appen, Mobbin)
+.mcp.json                MCP-servrar för Claude Code (SJ:s två, Figma-appen, Mobbin, Vercel)
 .vscode/mcp.json         samma MCP-servrar för Copilot i VS Code
 docs/kom-igang.md        steg-för-steg för en ny dator
 docs/mall.md             instruktioner till kodagenten för att installera mallen
 docs/README-prototyp.md  stomme för prototypens README (ersätter mallens vid första ship)
 docs/backend.md          databas, api/ och tester när prototypen används på riktigt
+docs/ny-dator.md         ny dator, Codespaces, gh-problem och SJ:s GitHub Enterprise (till kodagenten)
+docs/underlag.md         Figma, impeccable, Mobbin och varianter i detalj (till kodagenten)
+docs/publicera.md        ship, första publiceringen och Claude i GitHub i detalj (till kodagenten)
+docs/ios-safari.md       Safari på iPhone: kommandon, Safaris MCP-server och fällor
+docs/kontroller.md       kontroller som en ändring utlöser
+vercel.json              Vite-routing och spärren som bara bygger main, variant-* och preview-*
 .github/workflows/claude.yml  Claude i GitHub (@claude i ärenden och pull requests)
 feedback-till-mallen.md  problem med mallen under testperioden (se ovan)
 .impeccable/critique/ignore.md  kända falsklarm från SJ:s komponenter

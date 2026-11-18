@@ -34,6 +34,7 @@ React, Vite och TypeScript med SJ:s komponenter från Bit. Påhittad exempeldata
 |---|---|
 | `npm run dev` | Starta prototypen lokalt |
 | `npm run typecheck` | Kolla att koden hänger ihop |
+| `npm run verify` | Spela upp kärnflödena i `flows.json` (`--full` för mobil, desktop, mörkt läge och Safari) |
 | `npm run ship -- "meddelande"` | Publicera och få länken |
 
 ## Beslut och idéer

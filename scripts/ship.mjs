@@ -9,7 +9,8 @@
 //
 // Första gången skapas ett privat repo på ditt github.com-konto och ett
 // projekt på Vercel.
-// Står du på en annan branch än main blir det en förhandsvisning med egen länk.
+// Står du på en branch som börjar med variant- eller preview- blir det en
+// förhandsvisning med egen länk. Andra brancher laddas upp men byggs inte på Vercel.
 
 import { copyFileSync, existsSync, readFileSync } from "node:fs";
 import { basename } from "node:path";
@@ -86,6 +87,8 @@ if (!slug) {
     process.exit(1);
   }
   slug = `${owner}/${name}`;
+  // Mergade brancher tas bort automatiskt, så att repot inte fylls av gamla grenar.
+  gh(["api", "-X", "PATCH", `repos/${slug}`, "-F", "delete_branch_on_merge=true", "--silent"]);
 } else {
   // Någon annan (en kollega, Claude på webben eller @claude i GitHub) kan ha pushat
   // sedan sist. Hämta deras ändringar först och lägg våra ovanpå.
@@ -118,6 +121,12 @@ sha = run("git", ["rev-parse", "HEAD"]);
 say(`https://github.com/${slug}`);
 
 // 4. Vercel --------------------------------------------------------------------
+// Samma regel som scripts/vercel-ignore-build.sh: bara main, variant-* och preview-* byggs.
+if (!/^(main$|variant-|preview-)/.test(branch)) {
+  say(`\nBranchen ${branch} är uppladdad men byggs inte på Vercel (varje bygge lagras och kostar).`);
+  say("Testa lokalt och merga till main när det är klart. Behövs en egen länk: döp branchen till variant-… eller preview-….");
+  process.exit(0);
+}
 step("Publicerar på Vercel");
 if (!linkedProject()) {
   if (!exec("node", ["scripts/vercel-link.mjs"])) process.exit(2);

@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 // Bygger prototypen och öppnar den byggda sidan i en osynlig webbläsare (headless).
-// Stoppar om sidan är tom eller om det blir JavaScript-fel i konsolen.
+// Stoppar om sidan är tom eller om det blir JavaScript-fel i konsolen. Spelar sedan upp
+// kärnflödena i flows.json på den byggda sidan (npm run verify, vardagsnivån).
 //
 //   npm run smoke
 //   npm run smoke -- / /mina-resor     fler adresser att öppna
@@ -10,6 +11,8 @@
 // `npm run ship` kör den automatiskt.
 
 import { spawn, spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { launchBrowser } from "./lib/browser.mjs";
 import { isWin } from "./lib/util.mjs";
 
 const paths = process.argv.slice(2).filter((a) => a.startsWith("/"));
@@ -39,12 +42,7 @@ const stopServer = () => {
 let failed = false;
 try {
   await waitFor(base);
-  const { chromium } = await import("playwright");
-  const browser = await chromium.launch().catch(async () => {
-    console.log("Laddar ner Chromium (bara första gången)...");
-    spawnSync("npx", ["playwright", "install", "chromium"], { stdio: "inherit", shell: isWin });
-    return chromium.launch();
-  });
+  const browser = await launchBrowser("chromium");
   const page = await browser.newPage({ viewport: { width: 375, height: 812 } });
   const errors = [];
   page.on("pageerror", (e) => errors.push(e.message));
@@ -68,6 +66,17 @@ try {
     }
   }
   await browser.close();
+
+  if (!failed && existsSync("flows.json")) {
+    console.log("\nSpelar upp kärnflödena i flows.json...");
+    const verify = spawnSync(process.execPath, ["scripts/verify.mjs", "--vardag", "--url", base], { stdio: "inherit" });
+    if (verify.status === 1) {
+      failed = true;
+      console.log("\nEtt kärnflöde fungerar inte på den byggda sidan (se ovan).");
+    } else if (verify.status !== 0) {
+      console.log("Kärnflödena är INTE kontrollerade (se ovan). Säg det när du delar länken.");
+    }
+  }
 } catch (error) {
   failed = true;
   console.log(`\nKontrollen kunde inte köras: ${error.message}`);
